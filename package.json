@@ -4,6 +4,7 @@
   "description": "Typescript Modularity Nuance Tool",
   "main": "index.js",
   "scripts": {
+    "build": "tsup src/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,6 +14,7 @@
     "@types/node": "^18.16.1",
     "fast-glob": "^3.2.12",
     "rimraf": "^5.0.0",
+    "tsup": "^6.7.0",
     "typescript": "^5.0.4"
   }
 }
