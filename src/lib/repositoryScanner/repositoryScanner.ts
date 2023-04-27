@@ -25,11 +25,9 @@ export class RepositoryScanner {
 
     const tsFiles = await fg(filePatterns, options);
 
-    const program = this.createProgram(tsFiles);
+    const program = this.createProgram(tsFiles, rootDir);
 
     const components: Component[] = [];
-
-    console.log("tsFiles", tsFiles);
 
     for (const sourceFile of program.getSourceFiles()) {
       if (!sourceFile.isDeclarationFile) {
@@ -50,21 +48,25 @@ export class RepositoryScanner {
     return components;
   }
 
-  private createProgram(filePaths: string[]): ts.Program {
+  private createProgram(filePaths: string[], rootDir: string): ts.Program {
     const config = ts.readConfigFile(this.tsConfigFile, ts.sys.readFile);
     const parsedConfig = ts.parseJsonConfigFileContent(
       config.config,
       ts.sys,
       path.dirname(this.tsConfigFile)
     );
-    return ts.createProgram(filePaths, parsedConfig.options);
+
+    parsedConfig.options.rootDir = rootDir;
+    parsedConfig.fileNames = filePaths;
+
+    return ts.createProgram(parsedConfig.fileNames, parsedConfig.options);
   }
 
   private getComponentName(
     node: ts.ClassDeclaration | ts.FunctionDeclaration
   ): string | null {
     if (node.name) {
-      return node.name.getText();
+      return node.name?.escapedText?.toString() ?? node.name?.getText();
     }
     return null;
   }

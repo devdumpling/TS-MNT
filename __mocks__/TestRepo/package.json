@@ -1,8 +1,11 @@
 {
-  "name": "TestRepo",
+  "name": "test-repo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
