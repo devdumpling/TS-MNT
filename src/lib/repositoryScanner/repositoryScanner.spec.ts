@@ -17,12 +17,35 @@ describe("RepositoryScanner", () => {
       expect.objectContaining({
         name: "SampleClass",
         filePath: expect.stringContaining("TestRepo/src/SampleClass.ts"),
+        type: "utility",
       })
     );
     expect(components).toContainEqual(
       expect.objectContaining({
         name: "SampleComponent",
         filePath: expect.stringContaining("TestRepo/src/SampleComponent.tsx"),
+        type: "component",
+      })
+    );
+    expect(components).toContainEqual(
+      expect.objectContaining({
+        name: "SampleComponent2",
+        filePath: expect.stringContaining("TestRepo/src/SampleComponent.tsx"),
+        type: "component",
+      })
+    );
+    expect(components).toContainEqual(
+      expect.objectContaining({
+        name: "SampleComponent3",
+        filePath: expect.stringContaining("TestRepo/src/SampleComponent.tsx"),
+        type: "component",
+      })
+    );
+    expect(components).toContainEqual(
+      expect.objectContaining({
+        name: "SampleComponent4",
+        filePath: expect.stringContaining("TestRepo/src/SampleComponent.tsx"),
+        type: "component",
       })
     );
   });
