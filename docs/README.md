@@ -1,9 +1,30 @@
 # TS-MNT
+
 Typescript Modularity Nuance Tool (TS-MNT)
 
 ## Introduction
 
 The TypeScript Modularity Measurement Tool (TS-MMT) aims to analyze TypeScript repositories, particularly those with React components, to identify issues related to modularity, cohesion, and coupling. This document serves as a Request for Comments (RFC) for the design of TS-MMT.
+
+## USAGE
+
+### CLI
+
+#### `scan`
+
+Flags:
+
+- `-t` or `--tsconfig` - path to tsconfig.json
+- `-r` or `--repo` - path to repository
+- `-o` or `--output` - path to output JSON file
+
+Outputs:
+
+- `ts-mnt-report.json` - report of modularity analysis
+
+Example:
+
+`p cli scan -t path_to_tsconfig -r path_to_repo -o path_to_output/name_of_output_file.json`
 
 ## Goals
 
