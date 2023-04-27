@@ -1,1 +1,1 @@
-// index
+export * from "./repositoryScanner/repositoryScanner";
