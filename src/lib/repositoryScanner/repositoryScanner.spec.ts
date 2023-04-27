@@ -12,6 +12,8 @@ describe("RepositoryScanner", () => {
     const rootDir = path.resolve(__dirname, "../../../__mocks__/TestRepo");
     const components = await repositoryScanner.scanRepository(rootDir);
 
+    console.log(components);
+
     expect(components.length).toBeGreaterThan(0);
     expect(components).toContainEqual(
       expect.objectContaining({
