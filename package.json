@@ -4,7 +4,7 @@
   "description": "Typescript Modularity Nuance Tool",
   "main": "index.js",
   "scripts": {
-    "build": "tsup src/**/*.ts",
+    "build": "tsup src/**/*.ts --dts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
