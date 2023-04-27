@@ -1,0 +1,20 @@
+{
+  "name": "ts-mnt",
+  "version": "0.0.1",
+  "description": "Typescript Modularity Nuance Tool",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsup src/**/*.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Devon Wells",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.16.1",
+    "fast-glob": "^3.2.12",
+    "rimraf": "^5.0.0",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
+  }
+}
