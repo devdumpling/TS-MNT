@@ -29,11 +29,9 @@ export class RepositoryScanner {
 
     const components: Component[] = [];
 
-    // DEBUGGING -- looks like this is coming back with 0 files... a problem for the morning
     console.log("tsFiles", tsFiles);
 
     for (const sourceFile of program.getSourceFiles()) {
-      console.log("scanning", sourceFile.fileName);
       if (!sourceFile.isDeclarationFile) {
         ts.forEachChild(sourceFile, (node) => {
           if (ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node)) {
