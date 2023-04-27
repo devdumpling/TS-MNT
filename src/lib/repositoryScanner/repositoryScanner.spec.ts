@@ -1,7 +1,10 @@
 import { RepositoryScanner } from "./repositoryScanner";
 import * as path from "path";
 
-const PATH_TO_SAMPLE_REPO = path.resolve(__dirname, "../../../TestRepo");
+const PATH_TO_SAMPLE_REPO = path.resolve(
+  __dirname,
+  "../../../__tests__/TestRepo"
+);
 
 describe("RepositoryScanner", () => {
   const tsConfigFile = path.resolve(PATH_TO_SAMPLE_REPO, "tsconfig.json");
