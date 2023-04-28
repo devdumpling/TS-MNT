@@ -4,7 +4,7 @@ Typescript Modularity Nuance Tool (TS-MNT)
 
 ## Introduction
 
-The TypeScript Modularity Measurement Tool (TS-MMT) aims to analyze TypeScript repositories, particularly those with React components, to identify issues related to modularity, cohesion, and coupling. This document serves as a Request for Comments (RFC) for the design of TS-MMT.
+The TypeScript Modularity Measurement Tool (TS-MNT) aims to analyze TypeScript repositories, particularly those with React components, to identify issues related to modularity, cohesion, and coupling. This document serves as a Request for Comments (RFC) for the design of TS-MNT.
 
 ## USAGE
 
@@ -28,7 +28,7 @@ Example:
 
 ## Goals
 
-The primary goal of TS-MMT is to provide a comprehensive analysis of TypeScript repositories to:
+The primary goal of TS-MNT is to provide a comprehensive analysis of TypeScript repositories to:
 
 1. Detect components with low cohesion
 2. Identify components that are tightly coupled
@@ -38,7 +38,7 @@ The primary goal of TS-MMT is to provide a comprehensive analysis of TypeScript 
 
 ## Design Overview
 
-TS-MMT will be designed as a command-line tool and a library that can be integrated into build pipelines or Continuous Integration (CI) systems. The tool will have the following components:
+TS-MNT will be designed as a command-line tool and a library that can be integrated into build pipelines or Continuous Integration (CI) systems. The tool will have the following components:
 
 1. **Repository Scanner**: Scans the repository to identify TypeScript files, React components, and their dependencies.
 2. **Cohesion Analyzer**: Analyzes the code to detect low cohesion in components.
@@ -76,7 +76,7 @@ The Coupling Analyzer component will:
 
 The Dependency Visualizer component will:
 
-- Generate a visual representation of component dependencies using tools like `madge`, `dependency-cruiser`, or `npm-why`
+- Generate a visual representation of component dependencies using tools like `madge`, `dependency-cruiser`, or `pnpm-why`
 - Highlight components with high coupling or circular dependencies
 - Provide an interactive visualization for easy exploration and analysis
 
@@ -90,10 +90,10 @@ The Modularity Reporter component will:
 
 ## Implementation
 
-TS-MMT will be implemented using TypeScript and Node.js. It will use the TypeScript Compiler API for code analysis and parsing, and it will leverage existing libraries like `madge` or `dependency-cruiser` for dependency visualization.
+TS-MNT will be implemented using TypeScript and Node.js. It will use the TypeScript Compiler API for code analysis and parsing, and it will leverage existing libraries like `madge` or `dependency-cruiser` for dependency visualization.
 
 The tool will be designed to be extensible, allowing for additional analyzers or visualizers to be easily integrated in the future.
 
 ## Conclusion
 
-The TypeScript Modularity Measurement Tool (TS-MMT) will provide valuable insights into the modularity of TypeScript repositories, helping developers identify and address issues related to low cohesion and high coupling. By following the design outlined in this RFC, we can create a powerful tool to improve the maintainability and readability of TypeScript codebases.
+The TypeScript Modularity Measurement Tool (TS-MNT) will provide valuable insights into the modularity of TypeScript repositories, helping developers identify and address issues related to low cohesion and high coupling. By following the design outlined in this RFC, we can create a powerful tool to improve the maintainability and readability of TypeScript codebases.
