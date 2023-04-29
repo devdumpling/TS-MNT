@@ -1,4 +1,4 @@
-import ts, { isArrowFunction, isVariableDeclaration } from "typescript";
+import ts from "typescript";
 import fg from "fast-glob";
 import path from "path";
 
@@ -44,29 +44,6 @@ export class RepositoryScanner {
         this.visitNodes(sourceFile, sourceFile, components);
       }
     }
-
-    // for (const sourceFile of program.getSourceFiles()) {
-    //   if (!sourceFile.isDeclarationFile) {
-    //     ts.forEachChild(sourceFile, (node) => {
-    //       console.log(node);
-    //       if (
-    //         ts.isClassDeclaration(node) ||
-    //         ts.isFunctionDeclaration(node) ||
-    //         ts.isVariableDeclaration(node)
-    //       ) {
-    //         const componentName = this.getComponentName(node);
-    //         if (componentName) {
-    //           components.push({
-    //             type: this.isComponent(node) ? "component" : "utility",
-    //             name: componentName,
-    //             filePath: sourceFile.fileName,
-    //             imports: this.getImports(sourceFile),
-    //           });
-    //         }
-    //       }
-    //     });
-    //   }
-    // }
 
     return components;
   }
@@ -119,7 +96,7 @@ export class RepositoryScanner {
     return hasJSX;
   }
 
-  // This is recursive because we need to handle both explicit returns and 
+  // This is recursive because we need to handle both explicit returns and
   // implicit arrow function returns (for implicit we have to look at the function body)
   private getReturnStatementOrArrowBody(node: ts.Node): ts.Node | null {
     let resultNode: ts.Node | null = null;
