@@ -36,7 +36,13 @@ export class RepositoryScanner {
     this.ModuleGraph = new Graph();
   }
 
-  async scanRepository(rootDir: string): Promise<Component[]> {
+  async scanRepository(rootDir: string): Promise<Graph> {
+    // Performance hack while implementing -- only scan once
+    if (this.ModuleGraph.size > 0) {
+      console.log("Returning cached module graph");
+      return this.getModuleGraph();
+    }
+
     this.rootDir = rootDir;
     const filePatterns = this.options.filePatterns ?? ["**/*.ts", "**/*.tsx"];
     const ignorePatterns = this.options.ignorePatterns ?? [
@@ -62,9 +68,11 @@ export class RepositoryScanner {
       }
     }
 
-    console.log(this.ModuleGraph.toJSON());
+    return this.getModuleGraph();
+  }
 
-    return components;
+  private getModuleGraph(): Graph {
+    return this.ModuleGraph;
   }
 
   private visitNodes(
@@ -122,7 +130,7 @@ export class RepositoryScanner {
       component.props = props;
     }
 
-    this.ModuleGraph.addNode(componentName, component);
+    this.ModuleGraph.mergeNode(componentName, component);
   }
 
   private isComponent(node: ts.Node): boolean {

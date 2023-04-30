@@ -13,21 +13,39 @@ export function extractComponentDetails(node: ts.Node): {
     if (ts.isJsxAttribute(node)) {
       props.add(node.name.getText());
     } else if (ts.isCallExpression(node)) {
-      const expressionText = node.expression.getText();
-      if (
-        expressionText.startsWith("React.use") ||
-        expressionText.startsWith("use")
-      ) {
-        hooks.add(expressionText);
+      const expression = node.expression;
+      if (ts.isIdentifier(expression)) {
+        const expressionText = expression.escapedText.toString();
+        if (
+          expressionText.startsWith("React.use") ||
+          expressionText.startsWith("use")
+        ) {
+          hooks.add(expressionText);
+        }
       }
-    } else if (
+    }
+    // Some ugly conditional logic:
+    // effectively, we're looking only for variable declarations that are
+    // initialized with a call to useState, and only those that are
+    // array binding patterns.
+    // I'm sure there's a cleaner way to do this with the TS AST.    
+    else if (
       ts.isVariableDeclaration(node) &&
       node.initializer &&
-      ts.isCallExpression(node.initializer) &&
-      node.initializer.expression.getText() === "useState"
+      ts.isCallExpression(node.initializer)
     ) {
-      if (ts.isIdentifier(node.name)) {
-        stateVariables.add(node.name.getText());
+      const initializerExpression = node.initializer.expression;
+      if (
+        ts.isIdentifier(initializerExpression) &&
+        initializerExpression.escapedText.toString() === "useState"
+      ) {
+        if (ts.isArrayBindingPattern(node.name)) {
+          node.name.elements.forEach((element) => {
+            if (ts.isBindingElement(element) && ts.isIdentifier(element.name)) {
+              stateVariables.add(element.name.escapedText.toString());
+            }
+          });
+        }
       }
     }
 

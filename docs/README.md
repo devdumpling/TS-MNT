@@ -26,6 +26,10 @@ Example:
 
 `p cli scan -t path_to_tsconfig -r path_to_repo -o path_to_output/name_of_output_file.json`
 
+## Bugs/Gotchas
+
+- If a function component returns _only_ an empty fragment (e.g. <></>) it will be classified as a utility. This is because the empty fragment isn't actually classified as JSX Element. Not sure this is relevant for most use-cases, but something to be aware of.
+
 ## Goals
 
 The primary goal of TS-MNT is to provide a comprehensive analysis of TypeScript repositories to:
