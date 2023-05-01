@@ -1,11 +1,16 @@
 import ts from "typescript";
 
-export function extractComponentDetails(node: ts.Node): {
-  props: Set<string>;
+export function extractComponentDetails(
+  node: ts.Node,
+  sourceFile: ts.SourceFile
+): {
+  incomingProps: Set<string>;
+  childProps: Set<string>;
   hooks: Set<string>;
   stateVariables: Set<string>;
 } {
-  const props = new Set<string>();
+  const incomingProps = new Set<string>();
+  const childProps = new Set<string>();
   const hooks = new Set<string>();
   const stateVariables = new Set<string>();
 
@@ -13,8 +18,7 @@ export function extractComponentDetails(node: ts.Node): {
     // Extract props
     if (ts.isJsxAttribute(node)) {
       // Props on JSX elements
-      // TODO -- separate between incoming props and props that are passed to child components
-      props.add(node.name.escapedText.toString());
+      childProps.add(node.name.getText(sourceFile));
     }
     // Props passed to function components
     // TODO - add support for class component props?
@@ -30,7 +34,7 @@ export function extractComponentDetails(node: ts.Node): {
           typeNode.members.forEach((member) => {
             if (ts.isPropertySignature(member)) {
               if (member.name && ts.isIdentifier(member.name)) {
-                props.add(member.name.escapedText.toString());
+                incomingProps.add(member.name.getText(sourceFile));
               }
             }
           });
@@ -42,7 +46,7 @@ export function extractComponentDetails(node: ts.Node): {
     else if (ts.isCallExpression(node)) {
       const expression = node.expression;
       if (ts.isIdentifier(expression)) {
-        const expressionText = expression.escapedText.toString();
+        const expressionText = expression.getText(sourceFile);
         if (
           expressionText.startsWith("React.use") ||
           expressionText.startsWith("use")
@@ -67,12 +71,12 @@ export function extractComponentDetails(node: ts.Node): {
       const initializerExpression = node.initializer.expression;
       if (
         ts.isIdentifier(initializerExpression) &&
-        initializerExpression.escapedText.toString() === "useState"
+        initializerExpression.getText(sourceFile) === "useState"
       ) {
         if (ts.isArrayBindingPattern(node.name)) {
           node.name.elements.forEach((element) => {
             if (ts.isBindingElement(element) && ts.isIdentifier(element.name)) {
-              stateVariables.add(element.name.escapedText.toString());
+              stateVariables.add(element.name.getText(sourceFile));
             }
           });
         }
@@ -84,5 +88,5 @@ export function extractComponentDetails(node: ts.Node): {
 
   visit(node);
 
-  return { props, hooks, stateVariables };
+  return { incomingProps, childProps, hooks, stateVariables };
 }

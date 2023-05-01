@@ -13,7 +13,8 @@ interface Component {
   dependencies?: string[];
   hooks?: Set<string>;
   stateVariables?: Set<string>;
-  props?: Set<string>;
+  incomingProps?: Set<string>;
+  childProps?: Set<string>;
 }
 
 interface ScannerOptions {
@@ -87,7 +88,7 @@ export class RepositoryScanner {
         node.initializer &&
         ts.isArrowFunction(node.initializer))
     ) {
-      const componentName = this.getComponentName(node);
+      const componentName = this.getComponentName(node, sourceFile);
       // only process named nodes
       if (componentName) {
         // process the node and add it to the graph
@@ -124,10 +125,12 @@ export class RepositoryScanner {
     };
 
     if (type === "component") {
-      const { hooks, stateVariables, props } = extractComponentDetails(node);
+      const { hooks, stateVariables, incomingProps, childProps } =
+        extractComponentDetails(node, sourceFile);
       component.hooks = hooks;
       component.stateVariables = stateVariables;
-      component.props = props;
+      component.incomingProps = incomingProps;
+      component.childProps = childProps;
     }
 
     this.ModuleGraph.mergeNode(componentName, component);
@@ -187,9 +190,14 @@ export class RepositoryScanner {
     return ts.createProgram(parsedConfig.fileNames, parsedConfig.options);
   }
 
-  private getComponentName(node: ts.Node): string | undefined {
+  private getComponentName(
+    node: ts.Node,
+    sourceFile: ts.SourceFile
+  ): string | undefined {
     if (ts.isClassDeclaration(node) || ts.isFunctionDeclaration(node)) {
-      return node.name?.escapedText?.toString() ?? node.name?.getText();
+      return (
+        node.name?.getText(sourceFile) ?? node.name?.escapedText.toString()
+      );
     } else if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
       return node.name.text;
     }
