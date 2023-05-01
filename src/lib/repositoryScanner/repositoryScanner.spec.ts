@@ -12,8 +12,7 @@ describe("RepositoryScanner", () => {
 
   test("should find components in a TypeScript repository", async () => {
     const moduleGraph = await repositoryScanner.scanRepository(rootDir);
-    // console.log(moduleGraph);
-    console.log(moduleGraph.getNodeAttributes("SampleFunctionComponent"));
+    console.log(moduleGraph);
 
     expect(moduleGraph.order).toBeGreaterThan(0);
   });

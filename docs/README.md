@@ -29,6 +29,7 @@ Example:
 ## Bugs/Gotchas
 
 - If a function component returns _only_ an empty fragment (e.g. <></>) it will be classified as a utility. This is because the empty fragment isn't actually classified as JSX Element. Not sure this is relevant for most use-cases, but something to be aware of.
+- Components with the same name overrite each other in the graph (should probably use a combination of name and path as the node key to avoid this)
 
 ## Goals
 

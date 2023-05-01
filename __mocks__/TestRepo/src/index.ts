@@ -1,2 +1,2 @@
 export * from "./SampleClass";
-export * from "./SampleComponent";
+export * from "./SampleMultiComponent";

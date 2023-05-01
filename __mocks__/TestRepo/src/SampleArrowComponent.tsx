@@ -1,5 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 
-export const SampleFunctionComponent = (props) => {
-  return <div>Hello</div>;
+export const SampleArrowComponent = ({ lastName }: { lastName: string }) => {
+  const [name, setName] = useState("SampleFunctionComponent");
+  return (
+    <div>
+      {name}
+      {lastName}
+    </div>
+  );
 };

@@ -4,7 +4,9 @@ export default class SampleClassComponent extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      name: "SampleClassComponent",
+    };
 
     this.handleEvent = this.handleEvent.bind(this);
   }
