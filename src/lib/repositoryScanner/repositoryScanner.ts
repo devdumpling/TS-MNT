@@ -1,32 +1,55 @@
 import ts from "typescript";
 import fg from "fast-glob";
 import path from "path";
+import Graph from "graphology";
+
+import { getInternalDependencies, extractComponentDetails } from "../helpers";
 
 interface Component {
   type: "component" | "utility";
   name: string;
   filePath: string;
   imports: string[]; // Describes where we're importing from only (e.g. react)
+  dependencies?: string[];
+  hooks?: Set<string>;
+  stateVariables?: Set<string>;
+  props?: Set<string>;
 }
 
 interface ScannerOptions {
   filePatterns?: string[];
   ignorePatterns?: string[];
+  internalPackages?: string[];
   customComponentIdentifier?: (node: ts.Node) => boolean;
 }
 
 export class RepositoryScanner {
   private readonly tsConfigFile: string;
   private readonly options: ScannerOptions;
+  private rootDir: string;
+  private ModuleGraph: Graph;
 
   constructor(tsConfigFile: string, options: ScannerOptions = {}) {
     this.tsConfigFile = tsConfigFile;
     this.options = options;
+    this.rootDir = ".";
+    this.ModuleGraph = new Graph();
   }
 
-  async scanRepository(rootDir: string): Promise<Component[]> {
-    const filePatterns = ["**/*.ts", "**/*.tsx"];
-    const ignorePatterns = ["**/node_modules/**", "**/dist/**", "**/build/**"];
+  async scanRepository(rootDir: string): Promise<Graph> {
+    // Performance hack while implementing -- only scan once
+    if (this.ModuleGraph.size > 0) {
+      console.log("Returning cached module graph");
+      return this.getModuleGraph();
+    }
+
+    this.rootDir = rootDir;
+    const filePatterns = this.options.filePatterns ?? ["**/*.ts", "**/*.tsx"];
+    const ignorePatterns = this.options.ignorePatterns ?? [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+    ];
     const options: fg.Options = {
       cwd: rootDir,
       absolute: true,
@@ -45,7 +68,11 @@ export class RepositoryScanner {
       }
     }
 
-    return components;
+    return this.getModuleGraph();
+  }
+
+  private getModuleGraph(): Graph {
+    return this.ModuleGraph;
   }
 
   private visitNodes(
@@ -61,19 +88,49 @@ export class RepositoryScanner {
         ts.isArrowFunction(node.initializer))
     ) {
       const componentName = this.getComponentName(node);
+      // only process named nodes
       if (componentName) {
-        components.push({
-          type: this.isComponent(node) ? "component" : "utility",
-          name: componentName,
-          filePath: sourceFile.fileName,
-          imports: this.getImports(sourceFile),
-        });
+        // process the node and add it to the graph
+        this.processNode(node, componentName, sourceFile);
       }
     }
 
+    // must recurse for anonymous arrow functions
     ts.forEachChild(node, (childNode) => {
       this.visitNodes(sourceFile, childNode, components);
     });
+  }
+
+  private processNode(
+    node: ts.Node,
+    componentName: string,
+    sourceFile: ts.SourceFile
+  ): void {
+    const type = this.isComponent(node) ? "component" : "utility";
+    const filePath = sourceFile.fileName;
+    const imports = this.getImports(sourceFile);
+    const dependencies = getInternalDependencies(
+      imports,
+      this.rootDir,
+      this.options.internalPackages
+    );
+
+    const component: Component = {
+      type,
+      name: componentName,
+      filePath,
+      imports,
+      dependencies,
+    };
+
+    if (type === "component") {
+      const { hooks, stateVariables, props } = extractComponentDetails(node);
+      component.hooks = hooks;
+      component.stateVariables = stateVariables;
+      component.props = props;
+    }
+
+    this.ModuleGraph.mergeNode(componentName, component);
   }
 
   private isComponent(node: ts.Node): boolean {
