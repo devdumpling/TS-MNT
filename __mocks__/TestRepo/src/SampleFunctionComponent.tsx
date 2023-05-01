@@ -10,7 +10,11 @@ export function SampleFunctionComponent({
   const [count, setCount] = useState(0);
   const [test] = useState(0);
 
-  const testFunction = ({ test }: { test: boolean }) => {
+  const testFunction = ({
+    internalTestProp,
+  }: {
+    internalTestProp: boolean;
+  }) => {
     return test;
   };
 
