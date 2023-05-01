@@ -50,11 +50,24 @@ yargs(hideBin(process.argv))
       const components = await repositoryScanner.scanRepository(rootDir);
 
       if (outputFile) {
-        fs.writeFileSync(outputFile, JSON.stringify(components, null, 2));
+        fs.writeFileSync(
+          outputFile,
+          JSON.stringify(
+            components,
+            (_key, value) => (value instanceof Set ? [...value] : value),
+            2
+          )
+        );
         console.log(`Components written to ${outputFile}`);
       } else {
         console.log("Found components:");
-        console.log(JSON.stringify(components, null, 2));
+        console.log(
+          JSON.stringify(
+            components,
+            (_key, value) => (value instanceof Set ? [...value] : value),
+            2
+          )
+        );
       }
     }
   )
