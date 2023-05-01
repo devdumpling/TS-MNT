@@ -12,8 +12,13 @@ export function extractComponentDetails(node: ts.Node): {
   function visit(node: ts.Node, parent?: ts.Node): void {
     // Extract props
     if (ts.isJsxAttribute(node)) {
-      props.add(node.name.getText());
-    } else if (
+      // Props on JSX elements
+      // TODO -- separate between incoming props and props that are passed to child components
+      props.add(node.name.escapedText.toString());
+    }
+    // Props passed to function components
+    // TODO - add support for class component props?
+    else if (
       ts.isParameter(node) &&
       parent &&
       (ts.isFunctionDeclaration(parent) || ts.isArrowFunction(parent))

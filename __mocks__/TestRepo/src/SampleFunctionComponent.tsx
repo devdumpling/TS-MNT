@@ -24,7 +24,7 @@ export function SampleFunctionComponent({
 
   return (
     <>
-      <div>{name}</div>
+      <div className="text-red-500">{name}</div>
     </>
   );
 }
