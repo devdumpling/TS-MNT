@@ -181,19 +181,39 @@
       }
     },
     {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
+        "name": "index.ts",
+        "lineCount": 2,
+        "imports": [],
+        "dependencies": []
+      }
+    },
+    {
       "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
       "attributes": {
         "type": "file",
         "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
         "name": "SampleMultiComponent.tsx",
-        "lineCount": 15,
+        "lineCount": 16,
         "imports": [
           {
             "moduleSpecifier": "react",
             "defaultImport": "React"
+          },
+          {
+            "moduleSpecifier": "./",
+            "moduleFullPath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src",
+            "namedImports": [
+              "SampleClass"
+            ]
           }
         ],
-        "dependencies": []
+        "dependencies": [
+          "./"
+        ]
       }
     },
     {
@@ -264,14 +284,12 @@
       }
     },
     {
-      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
+      "key": "./",
       "attributes": {
-        "type": "file",
-        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
-        "name": "index.ts",
-        "lineCount": 2,
-        "imports": [],
-        "dependencies": []
+        "type": "module",
+        "filePath": "./",
+        "name": "./",
+        "isInternal": true
       }
     }
   ],
@@ -280,6 +298,11 @@
       "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx->/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
       "source": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx",
       "target": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx"
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx->./",
+      "source": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+      "target": "./"
     }
   ]
 }

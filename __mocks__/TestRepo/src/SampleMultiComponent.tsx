@@ -1,4 +1,5 @@
 import React from "react";
+import { SampleClass } from "./";
 
 export function SampleComponent(props) {
   return <div>hello</div>;
