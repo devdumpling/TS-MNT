@@ -96,6 +96,8 @@ yargs(hideBin(process.argv))
           )
         );
         console.log(`Components written to ${outputFile}`);
+        console.info("Order", components.order);
+        console.info("Edges:", components.size);
       } else {
         console.log("Found components:");
         console.log(
