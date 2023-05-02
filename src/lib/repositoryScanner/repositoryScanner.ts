@@ -12,6 +12,7 @@ type GraphNode = ComponentNode | UtilityNode | FileNode | ModuleNode;
 
 export interface ImportInfo {
   moduleSpecifier: string;
+  moduleFullPath?: string;
   defaultImport?: string;
   namedImports?: string[];
   namespaceImport?: string;
@@ -292,7 +293,24 @@ export class RepositoryScanner {
 
     ts.forEachChild(sourceFile, function visit(node: ts.Node) {
       if (ts.isImportDeclaration(node)) {
+        console.log("fileName", sourceFile.fileName);
         const moduleSpecifier = (node.moduleSpecifier as ts.StringLiteral).text;
+
+        // Determine the full path of the import
+        let moduleFullPath: string | undefined;
+
+        if (
+          moduleSpecifier.startsWith(".") ||
+          moduleSpecifier.startsWith("/")
+        ) {
+          // moduleFullPath = path.resolve(rootDir, moduleSpecifier);
+          moduleFullPath = path.resolve(
+            path.dirname(sourceFile.fileName),
+            node.moduleSpecifier.getText(sourceFile).replace(/['"`]/g, "")
+          );
+        }
+
+        console.log("moduleSpecifier", moduleSpecifier);
         let defaultImport: string | undefined;
         let namedImports: string[] | undefined;
         let namespaceImport: string | undefined;
@@ -315,6 +333,7 @@ export class RepositoryScanner {
 
         imports.push({
           moduleSpecifier,
+          moduleFullPath,
           defaultImport,
           namedImports,
           namespaceImport,
