@@ -2,6 +2,7 @@ import ts from "typescript";
 import fg from "fast-glob";
 import path from "path";
 import Graph from "graphology";
+import * as fs from "fs";
 
 import { getInternalDependencies, extractComponentDetails } from "../helpers";
 import { syntaxKindToName } from "../helpers/syntaxKindToName";
@@ -53,8 +54,11 @@ interface ScannerOptions {
   filePatterns?: string[];
   ignorePatterns?: string[];
   internalPackages?: string[];
+  possibleExtensions?: string[];
   customComponentIdentifier?: (node: ts.Node) => boolean;
 }
+
+const DEFAULT_POSSIBLE_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"];
 
 export class RepositoryScanner {
   private readonly tsConfigFile: string;
@@ -290,6 +294,8 @@ export class RepositoryScanner {
 
   private getImports(sourceFile: ts.SourceFile): ImportInfo[] {
     const imports: ImportInfo[] = [];
+    const possibleExtensions =
+      this.options.possibleExtensions ?? DEFAULT_POSSIBLE_EXTENSIONS;
 
     ts.forEachChild(sourceFile, function visit(node: ts.Node) {
       if (ts.isImportDeclaration(node)) {
@@ -303,11 +309,20 @@ export class RepositoryScanner {
           moduleSpecifier.startsWith(".") ||
           moduleSpecifier.startsWith("/")
         ) {
-          // moduleFullPath = path.resolve(rootDir, moduleSpecifier);
           moduleFullPath = path.resolve(
             path.dirname(sourceFile.fileName),
             node.moduleSpecifier.getText(sourceFile).replace(/['"`]/g, "")
           );
+
+          // Add file extension if it's missing (used for edge detection between files)
+          if (!fs.existsSync(moduleFullPath)) {
+            for (const ext of possibleExtensions) {
+              if (fs.existsSync(moduleFullPath + ext)) {
+                moduleFullPath = moduleFullPath + ext;
+                break;
+              }
+            }
+          }
         }
 
         console.log("moduleSpecifier", moduleSpecifier);
