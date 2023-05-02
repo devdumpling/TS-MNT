@@ -130,7 +130,7 @@ export class RepositoryScanner {
           // Check to see if the dependency exists in the graph
           if (this.ModuleGraph.hasNode(dependencyPath)) {
             // If it does, we draw an edge from the fileNode to the dependency
-            console.log("Adding edge from ", fileNode, " to ", dependencyPath);
+            // console.log("Adding edge from ", fileNode, " to ", dependencyPath);
             this.ModuleGraph.addDirectedEdge(fileNode, dependencyPath);
           } else {
             // Otherwise we assume this is a module dependency
@@ -141,7 +141,7 @@ export class RepositoryScanner {
               name: dependencySpecifier,
               isInternal: true,
             };
-            console.log("Adding edge from ", fileNode, " to ", moduleNode);
+            // console.log("Adding edge from ", fileNode, " to ", moduleNode);
             this.ModuleGraph.mergeNode(dependencySpecifier, moduleNode);
             this.ModuleGraph.addDirectedEdge(fileNode, dependencySpecifier);
           }
