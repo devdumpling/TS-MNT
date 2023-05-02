@@ -50,7 +50,7 @@ interface ModuleNode extends BaseNode {
   isInternal?: boolean;
 }
 
-interface ScannerOptions {
+export interface ScannerOptions {
   filePatterns?: string[];
   ignorePatterns?: string[];
   internalPackages?: string[];
@@ -131,7 +131,11 @@ export class RepositoryScanner {
           if (this.ModuleGraph.hasNode(dependencyPath)) {
             // If it does, we draw an edge from the fileNode to the dependency
             // console.log("Adding edge from ", fileNode, " to ", dependencyPath);
-            this.ModuleGraph.addDirectedEdge(fileNode, dependencyPath);
+            this.ModuleGraph.addDirectedEdgeWithKey(
+              `${fileNode}->${dependencyPath}`,
+              fileNode,
+              dependencyPath
+            );
           } else {
             // Otherwise we assume this is a module dependency
             // and we create a new module node and draw an edge from the fileNode to the moduleNode
@@ -143,7 +147,11 @@ export class RepositoryScanner {
             };
             // console.log("Adding edge from ", fileNode, " to ", moduleNode);
             this.ModuleGraph.mergeNode(dependencySpecifier, moduleNode);
-            this.ModuleGraph.addDirectedEdge(fileNode, dependencySpecifier);
+            this.ModuleGraph.addDirectedEdgeWithKey(
+              `${fileNode}->${dependencySpecifier}`,
+              fileNode,
+              dependencySpecifier
+            );
           }
         }
       }

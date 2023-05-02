@@ -1,0 +1,285 @@
+{
+  "options": {
+    "type": "mixed",
+    "multi": false,
+    "allowSelfLoops": true
+  },
+  "attributes": {},
+  "nodes": [
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleArrowComponent.tsx",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleArrowComponent.tsx",
+        "name": "SampleArrowComponent.tsx",
+        "lineCount": 11,
+        "imports": [
+          {
+            "moduleSpecifier": "react",
+            "defaultImport": "React",
+            "namedImports": [
+              "useState"
+            ]
+          }
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "key": "SampleArrowComponent:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleArrowComponent.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleArrowComponent",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleArrowComponent.tsx",
+        "hooks": [
+          "useState"
+        ],
+        "stateVariables": [
+          "name",
+          "setName"
+        ],
+        "incomingProps": [
+          "lastName"
+        ],
+        "childProps": []
+      }
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClass.ts",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClass.ts",
+        "name": "SampleClass.ts",
+        "lineCount": 5,
+        "imports": [],
+        "dependencies": []
+      }
+    },
+    {
+      "key": "SampleClass:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClass.ts",
+      "attributes": {
+        "type": "utility",
+        "name": "SampleClass",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClass.ts"
+      }
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClassComponent.tsx",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClassComponent.tsx",
+        "name": "SampleClassComponent.tsx",
+        "lineCount": 35,
+        "imports": [
+          {
+            "moduleSpecifier": "react",
+            "defaultImport": "React",
+            "namedImports": [
+              "Component"
+            ]
+          }
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "key": "SampleClassComponent:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClassComponent.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleClassComponent",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClassComponent.tsx",
+        "hooks": [],
+        "stateVariables": [],
+        "incomingProps": [],
+        "childProps": []
+      }
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+        "name": "SampleFunctionComponent.tsx",
+        "lineCount": 30,
+        "imports": [
+          {
+            "moduleSpecifier": "react",
+            "defaultImport": "React",
+            "namedImports": [
+              "useState",
+              "useEffect"
+            ]
+          }
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "key": "SampleFunctionComponent:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleFunctionComponent",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+        "hooks": [
+          "useState",
+          "useEffect"
+        ],
+        "stateVariables": [
+          "count",
+          "setCount",
+          "test"
+        ],
+        "incomingProps": [
+          "name",
+          "otherName",
+          "internalTestProp"
+        ],
+        "childProps": [
+          "className"
+        ]
+      }
+    },
+    {
+      "key": "testFunction:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+      "attributes": {
+        "type": "utility",
+        "name": "testFunction",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx"
+      }
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx",
+        "name": "SampleHOC.tsx",
+        "lineCount": 9,
+        "imports": [
+          {
+            "moduleSpecifier": "./SampleFunctionComponent/SampleFunctionComponent",
+            "moduleFullPath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+            "namedImports": [
+              "SampleFunctionComponent"
+            ]
+          }
+        ],
+        "dependencies": [
+          "./SampleFunctionComponent/SampleFunctionComponent"
+        ]
+      }
+    },
+    {
+      "key": "SampleHOC:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleHOC",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx",
+        "hooks": [],
+        "stateVariables": [],
+        "incomingProps": [],
+        "childProps": []
+      }
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+        "name": "SampleMultiComponent.tsx",
+        "lineCount": 15,
+        "imports": [
+          {
+            "moduleSpecifier": "react",
+            "defaultImport": "React"
+          }
+        ],
+        "dependencies": []
+      }
+    },
+    {
+      "key": "SampleComponent:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleComponent",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+        "hooks": [],
+        "stateVariables": [],
+        "incomingProps": [],
+        "childProps": []
+      }
+    },
+    {
+      "key": "SampleComponent2:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleComponent2",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+        "hooks": [],
+        "stateVariables": [],
+        "incomingProps": [],
+        "childProps": []
+      }
+    },
+    {
+      "key": "SampleComponent3:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleComponent3",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+        "hooks": [],
+        "stateVariables": [],
+        "incomingProps": [],
+        "childProps": []
+      }
+    },
+    {
+      "key": "SampleComponent4:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+      "attributes": {
+        "type": "component",
+        "name": "SampleComponent4",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+        "hooks": [],
+        "stateVariables": [],
+        "incomingProps": [],
+        "childProps": []
+      }
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleUtil.ts",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleUtil.ts",
+        "name": "SampleUtil.ts",
+        "lineCount": 3,
+        "imports": [],
+        "dependencies": []
+      }
+    },
+    {
+      "key": "SampleUtil:/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleUtil.ts",
+      "attributes": {
+        "type": "utility",
+        "name": "SampleUtil",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleUtil.ts"
+      }
+    },
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
+      "attributes": {
+        "type": "file",
+        "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
+        "name": "index.ts",
+        "lineCount": 2,
+        "imports": [],
+        "dependencies": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx->/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+      "source": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx",
+      "target": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx"
+    }
+  ]
+}
