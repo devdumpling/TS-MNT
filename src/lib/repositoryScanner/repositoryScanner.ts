@@ -133,7 +133,16 @@ export class RepositoryScanner {
       component.childProps = childProps;
     }
 
-    this.ModuleGraph.mergeNode(componentName, component);
+    // Create a unique key for the node
+    const moduleGraphKey = `${componentName}:${filePath}`;
+    this.ModuleGraph.mergeNode(moduleGraphKey, component);
+    
+    // TODO: Add edges to the graph -- note we probably want to do this in a separate pass
+    // if (dependencies && dependencies.length > 0) {
+    //   for (const dependency of dependencies) {
+    //     this.ModuleGraph.mergeEdge(moduleGraphKey, dependency);
+    //   }
+    // }
   }
 
   private isComponent(node: ts.Node): boolean {
