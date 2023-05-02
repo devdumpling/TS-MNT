@@ -163,7 +163,7 @@ export class RepositoryScanner {
       console.log("Found module");
       const moduleNode: ModuleNode = {
         ...(baseNode as ModuleNode),
-        // TODO check for internal
+        // TODO check for isInternal
       };
       this.ModuleGraph.mergeNode(filePath, moduleNode);
     } else if (type === "utility") {
@@ -193,15 +193,6 @@ export class RepositoryScanner {
     else {
       throw new Error(`Unknown node type: ${type}`);
     }
-
-    // Create a unique key for the node
-
-    // TODO: Add edges to the graph -- note we probably want to do this in a separate pass
-    // if (dependencies && dependencies.length > 0) {
-    //   for (const dependency of dependencies) {
-    //     this.ModuleGraph.mergeEdge(moduleGraphKey, dependency);
-    //   }
-    // }
   }
 
   // TODO add module identity
