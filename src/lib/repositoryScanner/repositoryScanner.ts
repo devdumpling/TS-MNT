@@ -127,9 +127,7 @@ export class RepositoryScanner {
 
       for (const importInfo of fileImports) {
         const dependencySpecifier = importInfo.moduleSpecifier;
-        const dependencyPath = importInfo.moduleFullPath;
-
-        console.info("Dependency specifier: ", dependencySpecifier);
+        const dependencyPath = importInfo.moduleFullPath;        
 
         // Only internal dependencies exist in fileDependencies
         if (fileDependencies.includes(dependencySpecifier)) {
@@ -144,7 +142,10 @@ export class RepositoryScanner {
               dependencyPath
             );
           } else {
+            console.error("------------------");
             console.error("Dependency not found in graph: ", dependencyPath);
+            console.error("File node: ", fileNode);
+            console.error("Dependency specifier: ", dependencySpecifier);
             // Otherwise we assume this is a module dependency
             // and we create a new module node and draw an edge from the fileNode to the moduleNode
             const moduleNode: ModuleNode = {
