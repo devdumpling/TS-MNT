@@ -2,6 +2,7 @@ import ts from "typescript";
 import fg from "fast-glob";
 import path from "path";
 import Graph from "graphology";
+import * as fs from "fs";
 
 import { getInternalDependencies, extractComponentDetails } from "../helpers";
 import { syntaxKindToName } from "../helpers/syntaxKindToName";
@@ -12,6 +13,7 @@ type GraphNode = ComponentNode | UtilityNode | FileNode | ModuleNode;
 
 export interface ImportInfo {
   moduleSpecifier: string;
+  moduleFullPath?: string;
   defaultImport?: string;
   namedImports?: string[];
   namespaceImport?: string;
@@ -48,12 +50,15 @@ interface ModuleNode extends BaseNode {
   isInternal?: boolean;
 }
 
-interface ScannerOptions {
+export interface ScannerOptions {
   filePatterns?: string[];
   ignorePatterns?: string[];
   internalPackages?: string[];
+  possibleExtensions?: string[];
   customComponentIdentifier?: (node: ts.Node) => boolean;
 }
+
+const DEFAULT_POSSIBLE_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"];
 
 export class RepositoryScanner {
   private readonly tsConfigFile: string;
@@ -71,7 +76,7 @@ export class RepositoryScanner {
   async scanRepository(rootDir: string): Promise<Graph> {
     // Performance hack while implementing -- only scan once
     if (this.ModuleGraph.size > 0) {
-      console.log("Returning cached module graph");
+      // console.log("Returning cached module graph");
       return this.getModuleGraph();
     }
 
@@ -94,10 +99,61 @@ export class RepositoryScanner {
 
     const components: ComponentNode[] = [];
 
+    // Recursively visit each node in the AST, adding each to our ModuleGraph
     for (const sourceFile of program.getSourceFiles()) {
       if (!sourceFile.isDeclarationFile) {
-        console.log("Processing file: ", sourceFile.fileName);
+        // console.log("Processing file: ", sourceFile.fileName);
         this.visitNodes(sourceFile, sourceFile, components);
+      }
+    }
+
+    // Draw edges between FileNodes
+    const fileNodes = this.ModuleGraph.filterNodes(
+      (node, attr) => attr.type === "file"
+    );
+
+    // console.log("File nodes: ", fileNodes);
+
+    // If f_A imports f_B, then f_A depends on f_B
+    // As such, we draw an edge e_AB from f_A to f_B
+    for (const fileNode of fileNodes) {
+      const fileNodeData = this.ModuleGraph.getNodeAttributes(fileNode);
+      const fileImports = fileNodeData.imports ?? [];
+      const fileDependencies = fileNodeData.dependencies ?? [];
+
+      for (const importInfo of fileImports) {
+        const dependencySpecifier = importInfo.moduleSpecifier;
+        const dependencyPath = importInfo.moduleFullPath;
+
+        // Only internal dependencies exist in fileDependencies
+        if (fileDependencies.includes(dependencySpecifier)) {
+          // Check to see if the dependency exists in the graph
+          if (this.ModuleGraph.hasNode(dependencyPath)) {
+            // If it does, we draw an edge from the fileNode to the dependency
+            // console.log("Adding edge from ", fileNode, " to ", dependencyPath);
+            this.ModuleGraph.addDirectedEdgeWithKey(
+              `${fileNode}->${dependencyPath}`,
+              fileNode,
+              dependencyPath
+            );
+          } else {
+            // Otherwise we assume this is a module dependency
+            // and we create a new module node and draw an edge from the fileNode to the moduleNode
+            const moduleNode: ModuleNode = {
+              type: "module",
+              filePath: dependencySpecifier,
+              name: dependencySpecifier,
+              isInternal: true,
+            };
+            // console.log("Adding edge from ", fileNode, " to ", moduleNode);
+            this.ModuleGraph.mergeNode(dependencySpecifier, moduleNode);
+            this.ModuleGraph.addDirectedEdgeWithKey(
+              `${fileNode}->${dependencySpecifier}`,
+              fileNode,
+              dependencySpecifier
+            );
+          }
+        }
       }
     }
 
@@ -127,7 +183,7 @@ export class RepositoryScanner {
         this.processNode(node, componentName, sourceFile);
       }
     } else if (ts.isSourceFile(node)) {
-      console.log("Found source file");
+      // console.log("Found source file");
       const lineCount = node.getLineAndCharacterOfPosition(node.getEnd()).line;
       const imports = this.getImports(sourceFile);
       const dependencies = getInternalDependencies(
@@ -144,7 +200,7 @@ export class RepositoryScanner {
         dependencies,
       };
 
-      console.log("Merging file node: ", fileNode);
+      // console.log("Merging file node: ", fileNode);
 
       this.ModuleGraph.mergeNode(node.fileName, fileNode);
     }
@@ -171,20 +227,20 @@ export class RepositoryScanner {
 
     // TODO make this is a switch statement or rethink the processing
     if (type === "module") {
-      console.log("Found module");
+      // console.log("Found module");
       const moduleNode: ModuleNode = {
         ...(baseNode as ModuleNode),
         // TODO check for isInternal
       };
       this.ModuleGraph.mergeNode(filePath, moduleNode);
     } else if (type === "utility") {
-      console.log("Found utility");
+      // console.log("Found utility");
       const utilityNode: UtilityNode = {
         ...(baseNode as UtilityNode),
       };
       this.ModuleGraph.mergeNode(`${componentName}:${filePath}`, utilityNode);
     } else if (type === "component") {
-      console.log("Found component");
+      // console.log("Found component");
       const { hooks, stateVariables, incomingProps, childProps } =
         extractComponentDetails(node, sourceFile);
 
@@ -289,10 +345,36 @@ export class RepositoryScanner {
 
   private getImports(sourceFile: ts.SourceFile): ImportInfo[] {
     const imports: ImportInfo[] = [];
+    const possibleExtensions =
+      this.options.possibleExtensions ?? DEFAULT_POSSIBLE_EXTENSIONS;
 
     ts.forEachChild(sourceFile, function visit(node: ts.Node) {
       if (ts.isImportDeclaration(node)) {
         const moduleSpecifier = (node.moduleSpecifier as ts.StringLiteral).text;
+
+        // Determine the full path of the import
+        let moduleFullPath: string | undefined;
+
+        if (
+          moduleSpecifier.startsWith(".") ||
+          moduleSpecifier.startsWith("/")
+        ) {
+          moduleFullPath = path.resolve(
+            path.dirname(sourceFile.fileName),
+            node.moduleSpecifier.getText(sourceFile).replace(/['"`]/g, "")
+          );
+
+          // Add file extension if it's missing (used for edge detection between files)
+          if (!fs.existsSync(moduleFullPath)) {
+            for (const ext of possibleExtensions) {
+              if (fs.existsSync(moduleFullPath + ext)) {
+                moduleFullPath = moduleFullPath + ext;
+                break;
+              }
+            }
+          }
+        }
+
         let defaultImport: string | undefined;
         let namedImports: string[] | undefined;
         let namespaceImport: string | undefined;
@@ -315,6 +397,7 @@ export class RepositoryScanner {
 
         imports.push({
           moduleSpecifier,
+          moduleFullPath,
           defaultImport,
           namedImports,
           namespaceImport,

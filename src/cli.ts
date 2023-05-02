@@ -2,7 +2,7 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { RepositoryScanner } from "./lib";
+import { RepositoryScanner, ScannerOptions } from "./lib";
 import path from "path";
 import fs from "fs";
 
@@ -29,12 +29,49 @@ yargs(hideBin(process.argv))
           type: "string",
           description: "Path to the output file",
           demandOption: false,
+        })
+        .option("filePatterns", {
+          alias: "f",
+          type: "array",
+          description: "File patterns to include in the scan",
+          demandOption: false,
+        })
+        .option("ignorePatterns", {
+          alias: "i",
+          type: "array",
+          description: "File patterns to exclude from the scan",
+          demandOption: false,
+        })
+        .option("internalPackages", {
+          alias: "p",
+          type: "array",
+          description: "Internal package names to include in the scan",
+          demandOption: false,
+        })
+        .option("possibleExtensions", {
+          alias: "e",
+          type: "array",
+          description:
+            "Possible file extensions to consider in the scan (only affects internal dependency detection)",
+          demandOption: false,
         });
     },
     async (argv) => {
+      // TODO -- sanitize and validate these inputs
       const tsConfigFile = path.resolve(argv.tsconfig);
       const rootDir = path.resolve(argv.root);
       const outputFile = argv?.output;
+
+      const options: ScannerOptions = {
+        filePatterns: argv.filePatterns as string[] | undefined,
+        ignorePatterns: argv.ignorePatterns as string[] | undefined,
+        internalPackages: argv.internalPackages as string[] | undefined,
+        possibleExtensions: argv.possibleExtensions as string[] | undefined,
+      };
+
+      if (options) {
+        console.info("Options: ", options);
+      }
 
       if (!fs.existsSync(tsConfigFile)) {
         console.error("tsconfig.json file not found.");
@@ -46,7 +83,7 @@ yargs(hideBin(process.argv))
         process.exit(1);
       }
 
-      const repositoryScanner = new RepositoryScanner(tsConfigFile);
+      const repositoryScanner = new RepositoryScanner(tsConfigFile, options);
       const components = await repositoryScanner.scanRepository(rootDir);
 
       if (outputFile) {

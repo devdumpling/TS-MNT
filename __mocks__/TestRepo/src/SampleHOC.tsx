@@ -1,4 +1,4 @@
-import { SampleFunctionComponent } from "./SampleFunctionComponent";
+import { SampleFunctionComponent } from "./SampleFunctionComponent/SampleFunctionComponent";
 
 export function SampleHOC(props) {
   return (
