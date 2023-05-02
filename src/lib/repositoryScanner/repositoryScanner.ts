@@ -131,7 +131,7 @@ export class RepositoryScanner {
           if (this.ModuleGraph.hasNode(dependencyPath)) {
             // If it does, we draw an edge from the fileNode to the dependency
             // console.log("Adding edge from ", fileNode, " to ", dependencyPath);
-            this.ModuleGraph.addDirectedEdgeWithKey(
+            this.ModuleGraph.mergeDirectedEdgeWithKey(
               `${fileNode}->${dependencyPath}`,
               fileNode,
               dependencyPath
@@ -147,7 +147,7 @@ export class RepositoryScanner {
             };
             // console.log("Adding edge from ", fileNode, " to ", moduleNode);
             this.ModuleGraph.mergeNode(dependencySpecifier, moduleNode);
-            this.ModuleGraph.addDirectedEdgeWithKey(
+            this.ModuleGraph.mergeDirectedEdgeWithKey(
               `${fileNode}->${dependencySpecifier}`,
               fileNode,
               dependencySpecifier
