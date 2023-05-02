@@ -4,18 +4,24 @@ import path from "path";
 import Graph from "graphology";
 
 import { getInternalDependencies, extractComponentDetails } from "../helpers";
+import { syntaxKindToName } from "../helpers/syntaxKindToName";
 
 type NodeType = "component" | "utility" | "file" | "module";
 
 type GraphNode = ComponentNode | UtilityNode | FileNode | ModuleNode;
 
+export interface ImportInfo {
+  moduleSpecifier: string;
+  defaultImport?: string;
+  namedImports?: string[];
+  namespaceImport?: string;
+}
+
 interface BaseNode {
   type: NodeType;
   filePath: string;
   name: string;
-  imports?: string[]; // Describes where we're importing from only (e.g. react)
   exports?: string[];
-  dependencies?: string[];
 }
 
 interface ComponentNode extends BaseNode {
@@ -32,6 +38,8 @@ interface UtilityNode extends BaseNode {
 
 interface FileNode extends BaseNode {
   type: "file";
+  imports?: ImportInfo[];
+  dependencies?: string[];
   lineCount?: number;
 }
 
@@ -122,14 +130,25 @@ export class RepositoryScanner {
       console.log("Found source file");
       // @ts-ignore
       // TODO see if we can use this for gathering imports instead of our custom method
-      console.log(sourceFile.imports);
+      // console.log(sourceFile.imports);
       const lineCount = node.getLineAndCharacterOfPosition(node.getEnd()).line;
+      const imports = this.getImports(sourceFile);
+      const dependencies = getInternalDependencies(
+        imports,
+        this.rootDir,
+        this.options.internalPackages
+      );
       const fileNode: FileNode = {
         type: "file",
         filePath: node.fileName,
         name: path.basename(node.fileName),
         lineCount,
+        imports,
+        dependencies,
       };
+
+      console.log("Merging file node: ", fileNode);
+
       this.ModuleGraph.mergeNode(node.fileName, fileNode);
     }
 
@@ -146,19 +165,11 @@ export class RepositoryScanner {
   ): void {
     const type = this.identifyNode(node);
     const filePath = sourceFile.fileName;
-    const imports = this.getImports(sourceFile);
-    const dependencies = getInternalDependencies(
-      imports,
-      this.rootDir,
-      this.options.internalPackages
-    );
 
     const baseNode: BaseNode = {
       type,
       name: componentName,
       filePath,
-      imports,
-      dependencies,
     };
 
     // TODO make this is a switch statement or rethink the processing
@@ -279,16 +290,43 @@ export class RepositoryScanner {
     return undefined;
   }
 
-  private getImports(sourceFile: ts.SourceFile): string[] {
-    const imports: string[] = [];
-    sourceFile.forEachChild((node) => {
-      if (
-        ts.isImportDeclaration(node) &&
-        ts.isStringLiteral(node.moduleSpecifier)
-      ) {
-        imports.push(node.moduleSpecifier?.text || "UNKNOWN_IMPORT");
+  private getImports(sourceFile: ts.SourceFile): ImportInfo[] {
+    const imports: ImportInfo[] = [];
+
+    ts.forEachChild(sourceFile, function visit(node: ts.Node) {
+      if (ts.isImportDeclaration(node)) {
+        const moduleSpecifier = (node.moduleSpecifier as ts.StringLiteral).text;
+        let defaultImport: string | undefined;
+        let namedImports: string[] | undefined;
+        let namespaceImport: string | undefined;
+
+        if (node?.importClause && ts.isImportClause(node.importClause)) {
+          if (node.importClause.name) {
+            defaultImport = node.importClause.name.text;
+          }
+
+          if (node.importClause.namedBindings) {
+            if (ts.isNamedImports(node.importClause.namedBindings)) {
+              namedImports = node.importClause.namedBindings.elements.map(
+                (element) => element.name.text
+              );
+            } else if (ts.isNamespaceImport(node.importClause.namedBindings)) {
+              namespaceImport = node.importClause.namedBindings.name.text;
+            }
+          }
+        }
+
+        imports.push({
+          moduleSpecifier,
+          defaultImport,
+          namedImports,
+          namespaceImport,
+        });
       }
+
+      ts.forEachChild(node, visit);
     });
+
     return imports;
   }
 }
