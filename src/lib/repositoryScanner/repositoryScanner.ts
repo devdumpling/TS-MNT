@@ -7,34 +7,37 @@ import { getInternalDependencies, extractComponentDetails } from "../helpers";
 
 type NodeType = "component" | "utility" | "file" | "module";
 
+type GraphNode = ComponentNode | UtilityNode | FileNode | ModuleNode;
+
 interface BaseNode {
   type: NodeType;
+  filePath: string;
+  name: string;
+  imports?: string[]; // Describes where we're importing from only (e.g. react)
+  exports?: string[];
+  dependencies?: string[];
 }
 
 interface ComponentNode extends BaseNode {
-  type: "component" | "utility";
-  name: string;
-  filePath: string;
-  imports: string[]; // Describes where we're importing from only (e.g. react)
-  dependencies?: string[];
+  type: "component";
   hooks?: Set<string>;
   stateVariables?: Set<string>;
   incomingProps?: Set<string>;
   childProps?: Set<string>;
 }
 
+interface UtilityNode extends BaseNode {
+  type: "utility";
+}
+
 interface FileNode extends BaseNode {
   type: "file";
-  filePath: string;
-  imports?: string[];
-  exports?: string[];
   lineCount?: number;
 }
 
 interface ModuleNode extends BaseNode {
   type: "module";
-  name: string;
-  isInternal: boolean;
+  isInternal?: boolean;
 }
 
 interface ScannerOptions {
@@ -85,6 +88,7 @@ export class RepositoryScanner {
 
     for (const sourceFile of program.getSourceFiles()) {
       if (!sourceFile.isDeclarationFile) {
+        console.log("Processing file: ", sourceFile.fileName);
         this.visitNodes(sourceFile, sourceFile, components);
       }
     }
@@ -114,6 +118,16 @@ export class RepositoryScanner {
         // process the node and add it to the graph
         this.processNode(node, componentName, sourceFile);
       }
+    } else if (ts.isSourceFile(node)) {
+      console.log("Found source file");
+      const lineCount = node.getLineAndCharacterOfPosition(node.getEnd()).line;
+      const fileNode: FileNode = {
+        type: "file",
+        filePath: node.fileName,
+        name: path.basename(node.fileName),
+        lineCount,
+      };
+      this.ModuleGraph.mergeNode(node.fileName, fileNode);
     }
 
     // must recurse for anonymous arrow functions
@@ -127,7 +141,7 @@ export class RepositoryScanner {
     componentName: string,
     sourceFile: ts.SourceFile
   ): void {
-    const type = this.isComponent(node) ? "component" : "utility";
+    const type = this.identifyNode(node);
     const filePath = sourceFile.fileName;
     const imports = this.getImports(sourceFile);
     const dependencies = getInternalDependencies(
@@ -136,7 +150,7 @@ export class RepositoryScanner {
       this.options.internalPackages
     );
 
-    const component: ComponentNode = {
+    const baseNode: BaseNode = {
       type,
       name: componentName,
       filePath,
@@ -144,18 +158,43 @@ export class RepositoryScanner {
       dependencies,
     };
 
-    if (type === "component") {
+    // TODO make this is a switch statement or rethink the processing
+    if (type === "module") {
+      console.log("Found module");
+      const moduleNode: ModuleNode = {
+        ...(baseNode as ModuleNode),
+        // TODO check for internal
+      };
+      this.ModuleGraph.mergeNode(filePath, moduleNode);
+    } else if (type === "utility") {
+      console.log("Found utility");
+      const utilityNode: UtilityNode = {
+        ...(baseNode as UtilityNode),
+      };
+      this.ModuleGraph.mergeNode(`${componentName}:${filePath}`, utilityNode);
+    } else if (type === "component") {
+      console.log("Found component");
       const { hooks, stateVariables, incomingProps, childProps } =
         extractComponentDetails(node, sourceFile);
-      component.hooks = hooks;
-      component.stateVariables = stateVariables;
-      component.incomingProps = incomingProps;
-      component.childProps = childProps;
+
+      const componentNode: ComponentNode = {
+        ...(baseNode as ComponentNode),
+        hooks,
+        stateVariables,
+        incomingProps,
+        childProps,
+      };
+
+      const moduleGraphKey = `${componentName}:${filePath}`;
+      this.ModuleGraph.mergeNode(moduleGraphKey, componentNode);
+    }
+
+    // Should never happen
+    else {
+      throw new Error(`Unknown node type: ${type}`);
     }
 
     // Create a unique key for the node
-    const moduleGraphKey = `${componentName}:${filePath}`;
-    this.ModuleGraph.mergeNode(moduleGraphKey, component);
 
     // TODO: Add edges to the graph -- note we probably want to do this in a separate pass
     // if (dependencies && dependencies.length > 0) {
@@ -163,6 +202,19 @@ export class RepositoryScanner {
     //     this.ModuleGraph.mergeEdge(moduleGraphKey, dependency);
     //   }
     // }
+  }
+
+  // TODO add module identity
+  private identifyNode(node: ts.Node): NodeType {
+    if (ts.isSourceFile(node)) {
+      return "file";
+    } else if (this.isComponent(node)) {
+      return "component";
+    } else if (ts.isModuleDeclaration(node)) {
+      return "module";
+    } else {
+      return "utility";
+    }
   }
 
   private isComponent(node: ts.Node): boolean {
