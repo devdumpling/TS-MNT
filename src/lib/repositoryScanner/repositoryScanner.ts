@@ -128,9 +128,6 @@ export class RepositoryScanner {
       }
     } else if (ts.isSourceFile(node)) {
       console.log("Found source file");
-      // @ts-ignore
-      // TODO see if we can use this for gathering imports instead of our custom method
-      // console.log(sourceFile.imports);
       const lineCount = node.getLineAndCharacterOfPosition(node.getEnd()).line;
       const imports = this.getImports(sourceFile);
       const dependencies = getInternalDependencies(
