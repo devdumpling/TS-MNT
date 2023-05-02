@@ -129,10 +129,13 @@ export class RepositoryScanner {
         const dependencySpecifier = importInfo.moduleSpecifier;
         const dependencyPath = importInfo.moduleFullPath;
 
+        console.info("Dependency specifier: ", dependencySpecifier);
+
         // Only internal dependencies exist in fileDependencies
         if (fileDependencies.includes(dependencySpecifier)) {
           // Check to see if the dependency exists in the graph
           if (this.ModuleGraph.hasNode(dependencyPath)) {
+            // console.log("Found dependency in graph: ", dependencyPath);
             // If it does, we draw an edge from the fileNode to the dependency
             // console.log("Adding edge from ", fileNode, " to ", dependencyPath);
             this.ModuleGraph.mergeDirectedEdgeWithKey(
@@ -141,6 +144,7 @@ export class RepositoryScanner {
               dependencyPath
             );
           } else {
+            console.error("Dependency not found in graph: ", dependencyPath);
             // Otherwise we assume this is a module dependency
             // and we create a new module node and draw an edge from the fileNode to the moduleNode
             const moduleNode: ModuleNode = {
@@ -378,8 +382,6 @@ export class RepositoryScanner {
               moduleFullPath = indexFilePath;
             }
           }
-
-          console.log("moduleFullPath", moduleFullPath);
 
           // Add file extension if it's missing (used for edge detection between files)
           if (!fs.existsSync(moduleFullPath)) {
