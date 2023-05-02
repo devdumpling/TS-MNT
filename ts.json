@@ -205,7 +205,7 @@
           },
           {
             "moduleSpecifier": "./",
-            "moduleFullPath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src",
+            "moduleFullPath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
             "namedImports": [
               "SampleClass"
             ]
@@ -282,15 +282,6 @@
         "name": "SampleUtil",
         "filePath": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleUtil.ts"
       }
-    },
-    {
-      "key": "./",
-      "attributes": {
-        "type": "module",
-        "filePath": "./",
-        "name": "./",
-        "isInternal": true
-      }
     }
   ],
   "edges": [
@@ -300,9 +291,9 @@
       "target": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx"
     },
     {
-      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx->./",
+      "key": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx->/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
       "source": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
-      "target": "./"
+      "target": "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts"
     }
   ]
 }

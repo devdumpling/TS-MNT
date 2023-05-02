@@ -4,8 +4,12 @@ import path from "path";
 import Graph from "graphology";
 import * as fs from "fs";
 
-import { getInternalDependencies, extractComponentDetails } from "../helpers";
-import { syntaxKindToName } from "../helpers/syntaxKindToName";
+import {
+  getInternalDependencies,
+  extractComponentDetails,
+  isDirectory,
+  getIndexFilePath,
+} from "../helpers";
 
 type NodeType = "component" | "utility" | "file" | "module";
 
@@ -363,6 +367,19 @@ export class RepositoryScanner {
             path.dirname(sourceFile.fileName),
             node.moduleSpecifier.getText(sourceFile).replace(/['"`]/g, "")
           );
+
+          // If the path points to a directory with an index file, resolve the actual imported file path
+          if (isDirectory(moduleFullPath)) {
+            const indexFilePath = getIndexFilePath(
+              moduleFullPath,
+              possibleExtensions
+            );
+            if (indexFilePath) {
+              moduleFullPath = indexFilePath;
+            }
+          }
+
+          console.log("moduleFullPath", moduleFullPath);
 
           // Add file extension if it's missing (used for edge detection between files)
           if (!fs.existsSync(moduleFullPath)) {
