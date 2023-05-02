@@ -5,7 +5,13 @@ import Graph from "graphology";
 
 import { getInternalDependencies, extractComponentDetails } from "../helpers";
 
-interface Component {
+type NodeType = "component" | "utility" | "file" | "module";
+
+interface BaseNode {
+  type: NodeType;
+}
+
+interface ComponentNode extends BaseNode {
   type: "component" | "utility";
   name: string;
   filePath: string;
@@ -15,6 +21,20 @@ interface Component {
   stateVariables?: Set<string>;
   incomingProps?: Set<string>;
   childProps?: Set<string>;
+}
+
+interface FileNode extends BaseNode {
+  type: "file";
+  filePath: string;
+  imports?: string[];
+  exports?: string[];
+  lineCount?: number;
+}
+
+interface ModuleNode extends BaseNode {
+  type: "module";
+  name: string;
+  isInternal: boolean;
 }
 
 interface ScannerOptions {
@@ -61,7 +81,7 @@ export class RepositoryScanner {
 
     const program = this.createProgram(tsFiles, rootDir);
 
-    const components: Component[] = [];
+    const components: ComponentNode[] = [];
 
     for (const sourceFile of program.getSourceFiles()) {
       if (!sourceFile.isDeclarationFile) {
@@ -79,7 +99,7 @@ export class RepositoryScanner {
   private visitNodes(
     sourceFile: ts.SourceFile,
     node: ts.Node,
-    components: Component[]
+    components: ComponentNode[]
   ): void {
     if (
       ts.isClassDeclaration(node) ||
@@ -116,7 +136,7 @@ export class RepositoryScanner {
       this.options.internalPackages
     );
 
-    const component: Component = {
+    const component: ComponentNode = {
       type,
       name: componentName,
       filePath,
@@ -136,7 +156,7 @@ export class RepositoryScanner {
     // Create a unique key for the node
     const moduleGraphKey = `${componentName}:${filePath}`;
     this.ModuleGraph.mergeNode(moduleGraphKey, component);
-    
+
     // TODO: Add edges to the graph -- note we probably want to do this in a separate pass
     // if (dependencies && dependencies.length > 0) {
     //   for (const dependency of dependencies) {
