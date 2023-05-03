@@ -141,10 +141,10 @@ export class RepositoryScanner {
               dependencyPath
             );
           } else {
-            // console.error("------------------");
-            // console.error("Dependency not found in graph: ", dependencyPath);
-            // console.error("File node: ", fileNode);
-            // console.error("Dependency specifier: ", dependencySpecifier);
+            console.error("------------------");
+            console.error("Dependency not found in graph: ", dependencyPath);
+            console.error("File node: ", fileNode);
+            console.error("Dependency specifier: ", dependencySpecifier);
             // Otherwise we assume this is a module dependency
             // and we create a new module node and draw an edge from the fileNode to the moduleNode
             const moduleNode: ModuleNode = {
@@ -372,17 +372,17 @@ export class RepositoryScanner {
             node.moduleSpecifier.getText(sourceFile).replace(/['"`]/g, "")
           );
 
-          console.log("---------------");
-          console.log("BEFORE: moduleFullPath", moduleFullPath);
+          // console.log("---------------");
+          // console.log("BEFORE: moduleFullPath", moduleFullPath);
 
           // If the path points to a directory with an index file, resolve the actual imported file path
           if (isDirectory(moduleFullPath)) {
-            console.log("IS DIRECTORY");
+            // console.log("IS DIRECTORY");
             const indexFilePath = getIndexFilePath(
               moduleFullPath,
               possibleExtensions
             );
-            console.log("IS INDEX FILE PATH", indexFilePath);
+            // console.log("IS INDEX FILE PATH", indexFilePath);
             if (indexFilePath) {
               moduleFullPath = indexFilePath;
             }
@@ -390,9 +390,9 @@ export class RepositoryScanner {
 
           // Add file extension if it's missing (used for edge detection between files)
           if (!fs.existsSync(moduleFullPath)) {
-            console.log("FILE DOES NOT EXIST");
+            // console.log("FILE DOES NOT EXIST");
             for (const ext of possibleExtensions) {
-              console.log("EXT", ext);
+              // console.log("EXT", ext);
               if (fs.existsSync(moduleFullPath + ext)) {
                 moduleFullPath = moduleFullPath + ext;
                 break;
@@ -400,8 +400,8 @@ export class RepositoryScanner {
             }
           }
 
-          console.log("AFTER: moduleFullPath", moduleFullPath);
-          console.log("---------------");
+          // console.log("AFTER: moduleFullPath", moduleFullPath);
+          // console.log("---------------");
         }
 
         let defaultImport: string | undefined;
