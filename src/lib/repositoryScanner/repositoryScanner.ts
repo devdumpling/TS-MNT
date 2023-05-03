@@ -78,9 +78,6 @@ export class RepositoryScanner {
 
     this.drawFileEdges(fileNodes);
 
-    // Draw edges between ComponentNodes
-    // this.drawComponentEdges(components);
-
     return this.getModuleGraph();
   }
 
@@ -203,14 +200,17 @@ export class RepositoryScanner {
       filePath,
     };
 
-    // TODO make this is a switch statement or rethink the processing
+    // TODO -- handle modules
     if (type === "module") {
+      console.log("Module found: ", componentName, filePath);
       const moduleNode: ModuleNode = {
         ...(baseNode as ModuleNode),
         // TODO check for isInternal
       };
       this.ModuleGraph.mergeNode(filePath, moduleNode);
-    } else if (type === "utility") {
+    }
+
+    if (type === "utility") {
       const utilityNode: UtilityNode = {
         ...(baseNode as UtilityNode),
       };
@@ -235,6 +235,17 @@ export class RepositoryScanner {
     else {
       throw new Error(`Unknown node type: ${type}`);
     }
+
+    // Draw an edge from the fileNode to the componentNode
+    const fileNodeKey = sourceFile.fileName;
+    const componentNodeKey = `${componentName}:${filePath}`;
+    console.log("Adding edge from fileNode ", fileNodeKey);
+    console.log("to componentNode ", componentNodeKey);
+    this.ModuleGraph.mergeDirectedEdgeWithKey(
+      `${fileNodeKey}->${componentNodeKey}`,
+      fileNodeKey,
+      componentNodeKey
+    );
   }
 
   // TODO add module identity
