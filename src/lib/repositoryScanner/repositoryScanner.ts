@@ -138,7 +138,6 @@ export class RepositoryScanner {
               fileNode,
               moduleNodeKey
             );
-            console.warn("---------------------");
           }
         }
       }
@@ -201,14 +200,14 @@ export class RepositoryScanner {
     };
 
     // TODO -- handle modules
-    if (type === "module") {
-      console.log("Module found: ", componentName, filePath);
-      const moduleNode: ModuleNode = {
-        ...(baseNode as ModuleNode),
-        // TODO check for isInternal
-      };
-      this.ModuleGraph.mergeNode(filePath, moduleNode);
-    }
+    // if (type === "module") {
+    //   console.log("Module found: ", componentName, filePath);
+    //   const moduleNode: ModuleNode = {
+    //     ...(baseNode as ModuleNode),
+    //     // TODO check for isInternal
+    //   };
+    //   this.ModuleGraph.mergeNode(filePath, moduleNode);
+    // }
 
     if (type === "utility") {
       const utilityNode: UtilityNode = {
@@ -239,8 +238,11 @@ export class RepositoryScanner {
     // Draw an edge from the fileNode to the componentNode
     const fileNodeKey = sourceFile.fileName;
     const componentNodeKey = `${componentName}:${filePath}`;
-    console.log("Adding edge from fileNode ", fileNodeKey);
-    console.log("to componentNode ", componentNodeKey);
+    if (this.debug) {
+      console.log("Adding edge from fileNode ", fileNodeKey);
+      console.log("to component or utility node ", componentNodeKey);
+    }
+
     this.ModuleGraph.mergeDirectedEdgeWithKey(
       `${fileNodeKey}->${componentNodeKey}`,
       fileNodeKey,
