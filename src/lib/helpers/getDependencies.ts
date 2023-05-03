@@ -10,6 +10,7 @@ export function getInternalDependencies(
   ignoreExtensions: string[] = [] // e.g. ["scss", "css"]
 ): string[] {
   console.log("internalPackagePrefix: ", internalPackagePrefix);
+  console.log("imports: ", imports);
   return imports
     .map((importInfo) => importInfo.moduleSpecifier)
     .filter(
