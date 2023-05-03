@@ -86,7 +86,8 @@ export class RepositoryScanner {
 
     this.rootDir = rootDir;
     const filePatterns = this.options.filePatterns ?? ["**/*.ts", "**/*.tsx"];
-    const ignorePatterns = this.options.ignorePatterns ?? [
+    const ignorePatterns = [
+      ...(this.options.ignorePatterns ?? []),
       "**/node_modules/**",
       "**/dist/**",
       "**/build/**",
