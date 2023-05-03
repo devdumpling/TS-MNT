@@ -236,16 +236,20 @@ export class RepositoryScanner {
       throw new Error(`Unknown node type: ${type}`);
     }
 
-    // Draw an edge from the fileNode to the componentNode
+    // The component or utility node depends on the file,
+    // Draw an edge from the Component or Utility Node to the FileNode
     const fileNodeKey = sourceFile.fileName;
     const componentNodeKey = `${componentName}:${filePath}`;
     if (this.debug) {
-      console.log("Adding edge from fileNode ", fileNodeKey);
-      console.log("to component or utility node ", componentNodeKey);
+      console.log(
+        "Adding edge from component or utility node ",
+        componentNodeKey
+      );
+      console.log("to file node ", fileNodeKey);
     }
 
     this.ModuleGraph.mergeDirectedEdgeWithKey(
-      `${fileNodeKey}->${componentNodeKey}`,
+      `${componentNodeKey}->${fileNodeKey}`,
       fileNodeKey,
       componentNodeKey
     );
