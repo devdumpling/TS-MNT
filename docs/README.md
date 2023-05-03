@@ -30,7 +30,7 @@ Example:
 
 HIGH PRIORITY
 
-- relative paths that don't point to the file directly are not handled right (e.g. import { thing } from "./" instead of "./thing")
+- `ignorePatterns` is not factored in when adding the internal dependencies for a FileNode. These should be excluded from the graph by design.
 
 LOW PRIORITY
 

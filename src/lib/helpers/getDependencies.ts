@@ -7,7 +7,8 @@ import type { ImportInfo } from "..";
 export function getInternalDependencies(
   imports: ImportInfo[],
   rootDir: string,
-  internalPackages: string[] = []
+  internalPackages: string[] = [],
+  ignoreExtensions: string[] = []
 ): string[] {
   return imports
     .map((importInfo) => importInfo.moduleSpecifier)

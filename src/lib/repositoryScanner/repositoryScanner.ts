@@ -152,10 +152,10 @@ export class RepositoryScanner {
               isInternal: true,
             };
             const moduleNodeKey = dependencyPath ?? dependencySpecifier;
-            console.log("Adding new ModuleNode at key: ", moduleNodeKey);
+            console.log("Adding ModuleNode at key: ", moduleNodeKey);
             this.ModuleGraph.mergeNode(moduleNodeKey, moduleNode);
             console.log(
-              "Adding new edge from fileNode to moduleNode: ",
+              "Adding edge from fileNode to moduleNode: ",
               fileNode,
               moduleNodeKey
             );
@@ -198,6 +198,7 @@ export class RepositoryScanner {
     } else if (ts.isSourceFile(node)) {
       const lineCount = node.getLineAndCharacterOfPosition(node.getEnd()).line;
       const imports = this.getImports(sourceFile);
+      // TODO -- update this to ignore dependencies that match our ignore patterns
       const dependencies = getInternalDependencies(
         imports,
         this.rootDir,
