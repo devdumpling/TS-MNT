@@ -392,6 +392,7 @@ export class RepositoryScanner {
           if (!fs.existsSync(moduleFullPath)) {
             console.log("FILE DOES NOT EXIST");
             for (const ext of possibleExtensions) {
+              console.log("EXT", ext);
               if (fs.existsSync(moduleFullPath + ext)) {
                 moduleFullPath = moduleFullPath + ext;
                 break;
