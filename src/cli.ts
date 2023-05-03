@@ -2,9 +2,10 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { RepositoryScanner, ScannerOptions } from "./lib";
+import { RepositoryScanner } from "./lib";
 import path from "path";
 import fs from "fs";
+import type { ScannerOptions } from "./lib/types";
 
 yargs(hideBin(process.argv))
   .command(

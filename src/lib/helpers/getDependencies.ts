@@ -1,9 +1,8 @@
 // imports is an array of strings, e.g. 'react', './src', etc
 // TODO -- update to work with tsconfig internal paths as well
+import type { ImportInfo } from "../types";
 
-import type { ImportInfo } from "..";
-
-// internal packages is an array of packages considered "internal", e.g. @goodrx
+// internal packages is an array of packages considered "internal", e.g. @company/package
 export function getInternalDependencies(
   imports: ImportInfo[],
   rootDir: string,

@@ -1,4 +1,4 @@
-import * as ts from "typescript";
+import ts from "typescript";
 
 // https://basarat.gitbook.io/typescript/overview/ast/ast-tip-syntaxkind
 export function syntaxKindToName(kind: ts.SyntaxKind) {

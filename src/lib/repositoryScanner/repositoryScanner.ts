@@ -11,56 +11,16 @@ import {
   getIndexFilePath,
 } from "../helpers";
 
-type NodeType = "component" | "utility" | "file" | "module";
-
-type GraphNode = ComponentNode | UtilityNode | FileNode | ModuleNode;
-
-export interface ImportInfo {
-  moduleSpecifier: string;
-  moduleFullPath?: string;
-  defaultImport?: string;
-  namedImports?: string[];
-  namespaceImport?: string;
-}
-
-interface BaseNode {
-  type: NodeType;
-  filePath: string;
-  name: string;
-  exports?: string[];
-}
-
-interface ComponentNode extends BaseNode {
-  type: "component";
-  hooks?: Set<string>;
-  stateVariables?: Set<string>;
-  incomingProps?: Set<string>;
-  childProps?: Set<string>;
-}
-
-interface UtilityNode extends BaseNode {
-  type: "utility";
-}
-
-interface FileNode extends BaseNode {
-  type: "file";
-  imports?: ImportInfo[];
-  dependencies?: string[];
-  lineCount?: number;
-}
-
-interface ModuleNode extends BaseNode {
-  type: "module";
-  isInternal?: boolean;
-}
-
-export interface ScannerOptions {
-  filePatterns?: string[];
-  ignorePatterns?: string[]; // Use this to override default ignore patterns (e.g. do not create nodes for these files)
-  internalPackages?: string[];
-  possibleExtensions?: string[];
-  customComponentIdentifier?: (node: ts.Node) => boolean;
-}
+import type {
+  ScannerOptions,
+  ComponentNode,
+  ModuleNode,
+  FileNode,
+  BaseNode,
+  UtilityNode,
+  NodeType,
+  ImportInfo,
+} from "../types";
 
 const DEFAULT_POSSIBLE_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"];
 
@@ -69,12 +29,14 @@ export class RepositoryScanner {
   private readonly options: ScannerOptions;
   private rootDir: string;
   private ModuleGraph: Graph;
+  private debug: boolean;
 
   constructor(tsConfigFile: string, options: ScannerOptions = {}) {
     this.tsConfigFile = tsConfigFile;
     this.options = options;
     this.rootDir = ".";
     this.ModuleGraph = new Graph();
+    this.debug = options.debug ?? false;
   }
 
   async scanRepository(rootDir: string): Promise<Graph> {
@@ -116,6 +78,16 @@ export class RepositoryScanner {
       (node, attr) => attr.type === "file"
     );
 
+    this.drawFileEdges(fileNodes);
+
+    return this.getModuleGraph();
+  }
+
+  getModuleGraph(): Graph {
+    return this.ModuleGraph;
+  }
+
+  private drawFileEdges(fileNodes: string[]): void {
     // If f_A imports f_B, then f_A depends on f_B
     // As such, we draw an edge e_AB from f_A to f_B
     for (const fileNode of fileNodes) {
@@ -138,11 +110,13 @@ export class RepositoryScanner {
               dependencyPath
             );
           } else {
-            console.warn("---------------------");
-            console.warn(
-              `Could not draw internal dep edge from ${fileNode} to ${dependencyPath} \n Dependency not found in graph: `,
-              dependencyPath
-            );
+            if (this.debug) {
+              console.warn("---------------------");
+              console.warn(
+                `Could not draw internal dep edge from ${fileNode} to ${dependencyPath} \n Dependency not found in graph: `,
+                dependencyPath
+              );
+            }
             // Otherwise we assume this is a module dependency
             // and we create a new module node and draw an edge from the fileNode to the moduleNode
             const moduleNode: ModuleNode = {
@@ -152,13 +126,15 @@ export class RepositoryScanner {
               isInternal: true,
             };
             const moduleNodeKey = dependencyPath ?? dependencySpecifier;
-            console.log("Adding ModuleNode at key: ", moduleNodeKey);
+            if (this.debug)
+              console.log("Adding ModuleNode at key: ", moduleNodeKey);
             this.ModuleGraph.mergeNode(moduleNodeKey, moduleNode);
-            console.log(
-              "Adding edge from fileNode to moduleNode: ",
-              fileNode,
-              moduleNodeKey
-            );
+            if (this.debug)
+              console.log(
+                "Adding edge from fileNode to moduleNode: ",
+                fileNode,
+                moduleNodeKey
+              );
             this.ModuleGraph.mergeDirectedEdgeWithKey(
               `${fileNode}->${moduleNodeKey}`,
               fileNode,
@@ -169,12 +145,6 @@ export class RepositoryScanner {
         }
       }
     }
-
-    return this.getModuleGraph();
-  }
-
-  private getModuleGraph(): Graph {
-    return this.ModuleGraph;
   }
 
   private visitNodes(
