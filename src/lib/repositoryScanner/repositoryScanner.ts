@@ -127,7 +127,7 @@ export class RepositoryScanner {
 
       for (const importInfo of fileImports) {
         const dependencySpecifier = importInfo.moduleSpecifier;
-        const dependencyPath = importInfo.moduleFullPath;        
+        const dependencyPath = importInfo.moduleFullPath;
 
         // Only internal dependencies exist in fileDependencies
         if (fileDependencies.includes(dependencySpecifier)) {
@@ -372,6 +372,8 @@ export class RepositoryScanner {
             path.dirname(sourceFile.fileName),
             node.moduleSpecifier.getText(sourceFile).replace(/['"`]/g, "")
           );
+
+          console.log("moduleFullPath", moduleFullPath);
 
           // If the path points to a directory with an index file, resolve the actual imported file path
           if (isDirectory(moduleFullPath)) {
