@@ -80,7 +80,7 @@ export class RepositoryScanner {
   async scanRepository(rootDir: string): Promise<Graph> {
     // Performance hack while implementing -- only scan once
     if (this.ModuleGraph.size > 0) {
-      // console.log("Returning cached module graph");
+      console.log("Returning cached module graph");
       return this.getModuleGraph();
     }
 
@@ -105,8 +105,7 @@ export class RepositoryScanner {
 
     // Recursively visit each node in the AST, adding each to our ModuleGraph
     for (const sourceFile of program.getSourceFiles()) {
-      if (!sourceFile.isDeclarationFile) {
-        // console.log("Processing file: ", sourceFile.fileName);
+      if (!sourceFile.isDeclarationFile) {        
         this.visitNodes(sourceFile, sourceFile, components);
       }
     }
@@ -142,10 +141,10 @@ export class RepositoryScanner {
               dependencyPath
             );
           } else {
-            console.error("------------------");
-            console.error("Dependency not found in graph: ", dependencyPath);
-            console.error("File node: ", fileNode);
-            console.error("Dependency specifier: ", dependencySpecifier);
+            // console.error("------------------");
+            // console.error("Dependency not found in graph: ", dependencyPath);
+            // console.error("File node: ", fileNode);
+            // console.error("Dependency specifier: ", dependencySpecifier);
             // Otherwise we assume this is a module dependency
             // and we create a new module node and draw an edge from the fileNode to the moduleNode
             const moduleNode: ModuleNode = {
