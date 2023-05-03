@@ -74,6 +74,7 @@ yargs(hideBin(process.argv))
         ignorePatterns: argv.ignorePatterns as string[] | undefined,
         internalPackages: argv.internalPackages as string[] | undefined,
         possibleExtensions: argv.possibleExtensions as string[] | undefined,
+        internalPackagePrefix: argv.internalPackagePrefix as string | undefined,
       };
 
       if (options) {
