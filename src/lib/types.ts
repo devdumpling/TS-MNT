@@ -47,6 +47,7 @@ export interface ScannerOptions {
   filePatterns?: string[];
   ignorePatterns?: string[]; // Use this to override default ignore patterns (e.g. do not create nodes for these files)
   internalPackages?: string[];
+  internalPackagePrefix?: string; // e.g. @company
   possibleExtensions?: string[];
   customComponentIdentifier?: (node: TSNode) => boolean;
   debug?: boolean;
