@@ -105,7 +105,7 @@ export class RepositoryScanner {
 
     // Recursively visit each node in the AST, adding each to our ModuleGraph
     for (const sourceFile of program.getSourceFiles()) {
-      if (!sourceFile.isDeclarationFile) {        
+      if (!sourceFile.isDeclarationFile) {
         this.visitNodes(sourceFile, sourceFile, components);
       }
     }
@@ -372,14 +372,17 @@ export class RepositoryScanner {
             node.moduleSpecifier.getText(sourceFile).replace(/['"`]/g, "")
           );
 
-          console.log("moduleFullPath", moduleFullPath);
+          console.log("---------------");
+          console.log("BEFORE: moduleFullPath", moduleFullPath);
 
           // If the path points to a directory with an index file, resolve the actual imported file path
           if (isDirectory(moduleFullPath)) {
+            console.log("IS DIRECTORY");
             const indexFilePath = getIndexFilePath(
               moduleFullPath,
               possibleExtensions
             );
+            console.log("IS INDEX FILE PATH", indexFilePath);
             if (indexFilePath) {
               moduleFullPath = indexFilePath;
             }
@@ -387,6 +390,7 @@ export class RepositoryScanner {
 
           // Add file extension if it's missing (used for edge detection between files)
           if (!fs.existsSync(moduleFullPath)) {
+            console.log("FILE DOES NOT EXIST");
             for (const ext of possibleExtensions) {
               if (fs.existsSync(moduleFullPath + ext)) {
                 moduleFullPath = moduleFullPath + ext;
@@ -394,6 +398,9 @@ export class RepositoryScanner {
               }
             }
           }
+
+          console.log("AFTER: moduleFullPath", moduleFullPath);
+          console.log("---------------");
         }
 
         let defaultImport: string | undefined;
