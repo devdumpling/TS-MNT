@@ -138,6 +138,7 @@ export class RepositoryScanner {
               dependencyPath
             );
           } else {
+            console.warn("---------------------");
             console.warn(
               `Could not draw internal dep edge from ${fileNode} to ${dependencyPath} \n Dependency not found in graph: `,
               dependencyPath
@@ -163,6 +164,7 @@ export class RepositoryScanner {
               fileNode,
               moduleNodeKey
             );
+            console.warn("---------------------");
           }
         }
       }
