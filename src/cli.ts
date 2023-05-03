@@ -49,6 +49,12 @@ yargs(hideBin(process.argv))
           description: "Internal package names to include in the scan",
           demandOption: false,
         })
+        .option("internalPackagePrefix", {
+          alias: "x",
+          type: "string",
+          description: "Prefix for internal package names",
+          demandOption: false,
+        })
         .option("possibleExtensions", {
           alias: "e",
           type: "array",

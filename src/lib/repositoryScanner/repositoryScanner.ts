@@ -165,7 +165,8 @@ export class RepositoryScanner {
       const dependencies = getInternalDependencies(
         imports,
         this.rootDir,
-        this.options.internalPackages
+        this.options.internalPackages,
+        this.options.internalPackagePrefix
       );
       const fileNode: FileNode = {
         type: "file",

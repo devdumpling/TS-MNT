@@ -1,4 +1,3 @@
-// imports is an array of strings, e.g. 'react', './src', etc
 // TODO -- update to work with tsconfig internal paths as well
 import type { ImportInfo } from "../types";
 
@@ -7,7 +6,8 @@ export function getInternalDependencies(
   imports: ImportInfo[],
   rootDir: string,
   internalPackages: string[] = [],
-  ignoreExtensions: string[] = []
+  internalPackagePrefix?: string, // e.g. @company
+  ignoreExtensions: string[] = [] // e.g. ["scss", "css"]
 ): string[] {
   return imports
     .map((importInfo) => importInfo.moduleSpecifier)
@@ -15,6 +15,8 @@ export function getInternalDependencies(
       (importedPath) =>
         importedPath.startsWith(".") ||
         importedPath.startsWith(rootDir) ||
-        internalPackages.includes(importedPath)
+        internalPackages.includes(importedPath) ||
+        (internalPackagePrefix &&
+          importedPath.startsWith(internalPackagePrefix))
     );
 }
