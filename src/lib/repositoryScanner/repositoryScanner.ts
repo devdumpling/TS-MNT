@@ -115,8 +115,6 @@ export class RepositoryScanner {
       (node, attr) => attr.type === "file"
     );
 
-    // console.log("File nodes: ", fileNodes);
-
     // If f_A imports f_B, then f_A depends on f_B
     // As such, we draw an edge e_AB from f_A to f_B
     for (const fileNode of fileNodes) {
@@ -149,16 +147,17 @@ export class RepositoryScanner {
             // and we create a new module node and draw an edge from the fileNode to the moduleNode
             const moduleNode: ModuleNode = {
               type: "module",
-              filePath: dependencySpecifier,
+              filePath: dependencyPath ?? dependencySpecifier,
               name: dependencySpecifier,
               isInternal: true,
             };
-            // console.log("Adding edge from ", fileNode, " to ", moduleNode);
-            this.ModuleGraph.mergeNode(dependencySpecifier, moduleNode);
+            const moduleNodeKey = dependencyPath ?? dependencySpecifier;
+            console.log("Adding node at key: ", moduleNodeKey);
+            this.ModuleGraph.mergeNode(moduleNodeKey, moduleNode);
             this.ModuleGraph.mergeDirectedEdgeWithKey(
-              `${fileNode}->${dependencySpecifier}`,
+              `${fileNode}->${moduleNodeKey}`,
               fileNode,
-              dependencySpecifier
+              moduleNodeKey
             );
           }
         }
@@ -191,7 +190,6 @@ export class RepositoryScanner {
         this.processNode(node, componentName, sourceFile);
       }
     } else if (ts.isSourceFile(node)) {
-      // console.log("Found source file");
       const lineCount = node.getLineAndCharacterOfPosition(node.getEnd()).line;
       const imports = this.getImports(sourceFile);
       const dependencies = getInternalDependencies(
@@ -207,8 +205,6 @@ export class RepositoryScanner {
         imports,
         dependencies,
       };
-
-      // console.log("Merging file node: ", fileNode);
 
       this.ModuleGraph.mergeNode(node.fileName, fileNode);
     }
@@ -235,20 +231,17 @@ export class RepositoryScanner {
 
     // TODO make this is a switch statement or rethink the processing
     if (type === "module") {
-      // console.log("Found module");
       const moduleNode: ModuleNode = {
         ...(baseNode as ModuleNode),
         // TODO check for isInternal
       };
       this.ModuleGraph.mergeNode(filePath, moduleNode);
     } else if (type === "utility") {
-      // console.log("Found utility");
       const utilityNode: UtilityNode = {
         ...(baseNode as UtilityNode),
       };
       this.ModuleGraph.mergeNode(`${componentName}:${filePath}`, utilityNode);
     } else if (type === "component") {
-      // console.log("Found component");
       const { hooks, stateVariables, incomingProps, childProps } =
         extractComponentDetails(node, sourceFile);
 
