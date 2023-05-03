@@ -64,12 +64,10 @@ export class RepositoryScanner {
 
     const program = this.createProgram(tsFiles, rootDir);
 
-    const components: ComponentNode[] = [];
-
     // Recursively visit each node in the AST, adding each to our ModuleGraph
     for (const sourceFile of program.getSourceFiles()) {
       if (!sourceFile.isDeclarationFile) {
-        this.visitNodes(sourceFile, sourceFile, components);
+        this.visitNodes(sourceFile, sourceFile);
       }
     }
 
@@ -79,6 +77,9 @@ export class RepositoryScanner {
     );
 
     this.drawFileEdges(fileNodes);
+
+    // Draw edges between ComponentNodes
+    // this.drawComponentEdges(components);
 
     return this.getModuleGraph();
   }
@@ -147,11 +148,7 @@ export class RepositoryScanner {
     }
   }
 
-  private visitNodes(
-    sourceFile: ts.SourceFile,
-    node: ts.Node,
-    components: ComponentNode[]
-  ): void {
+  private visitNodes(sourceFile: ts.SourceFile, node: ts.Node): void {
     if (
       ts.isClassDeclaration(node) ||
       ts.isFunctionDeclaration(node) ||
@@ -188,7 +185,7 @@ export class RepositoryScanner {
 
     // must recurse for anonymous arrow functions
     ts.forEachChild(node, (childNode) => {
-      this.visitNodes(sourceFile, childNode, components);
+      this.visitNodes(sourceFile, childNode);
     });
   }
 
