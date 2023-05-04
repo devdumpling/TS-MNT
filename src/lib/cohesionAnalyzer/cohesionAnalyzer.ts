@@ -119,7 +119,15 @@ export class CohesionAnalyzer {
 
   // Average across a provided score map
   getAverageScore(scores: Map<string, number>): number {
-    return Array.from(scores.values()).reduce((a, b) => a + b, 0) / scores.size;
+    return (
+      Array.from(scores.values()).reduce((a, b) => {
+        if (isNaN(a) || isNaN(b)) {
+          return 0;
+        } else {
+          return a + b;
+        }
+      }, 0) / scores.size
+    );
   }
 
   getMedianScore(scores: Map<string, number>): number {
