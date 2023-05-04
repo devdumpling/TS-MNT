@@ -17,6 +17,12 @@ Flags:
 - `-t` or `--tsconfig` - path to tsconfig.json
 - `-r` or `--repo` - path to repository
 - `-o` or `--output` - path to output JSON file
+- `-f` or `--filePatterns` - file patterns to include in scan (default: `['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx']`)
+- `-i` or `--ignorePatterns` - file patterns to ignore in scan (default: `['**/node_modules/**', '**/dist/**']`)
+- `-p` or `--internalPackages` - pacakges considered internal e.g. `@myorg/package` (default: `[]`)
+- `-x` or `--internalPackagePrefix` - prefix for internal packages e.g. `@myorg` (default: `undefined`)
+- `-e` or `--possibleExtensions` - file extensions to consider in the scan (only affects internal dependency detection)
+- `-d` or `--debug` - enable debug mode (default: `false`)
 
 Outputs:
 
@@ -25,6 +31,33 @@ Outputs:
 Example:
 
 `p cli scan -t path_to_tsconfig -r path_to_repo -o path_to_output/name_of_output_file.json`
+
+## Roadmap
+
+`RepositoryScanner`:
+
+- [x] MVP
+- [ ] ignore patterns for nodes you don't want in the graph
+
+`CohesionAnalyzer`:
+
+- [x] MVP
+- [ ] Analyze average scores of directories
+- [ ] Provide standard deviation of scores
+- [ ] Detect outliers
+- [ ] Allow for weight overrides
+
+`CouplingAnalyzer`:
+
+- [ ] MVP
+
+`DependencyVisualizer`:
+
+- [ ] MVP
+
+`ModularityReporter`:
+
+- [ ] MVP
 
 ## Bugs/Gotchas
 

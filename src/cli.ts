@@ -61,6 +61,12 @@ yargs(hideBin(process.argv))
           description:
             "Possible file extensions to consider in the scan (only affects internal dependency detection)",
           demandOption: false,
+        })
+        .option("debug", {
+          alias: "d",
+          type: "boolean",
+          description: "Enable debug logging",
+          demandOption: false,
         });
     },
     async (argv) => {
@@ -75,6 +81,7 @@ yargs(hideBin(process.argv))
         internalPackages: argv.internalPackages as string[] | undefined,
         possibleExtensions: argv.possibleExtensions as string[] | undefined,
         internalPackagePrefix: argv.internalPackagePrefix as string | undefined,
+        debug: argv.debug as boolean | undefined,
       };
 
       if (options) {
