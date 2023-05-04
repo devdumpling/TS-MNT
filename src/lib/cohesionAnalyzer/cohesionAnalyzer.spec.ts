@@ -22,8 +22,7 @@ describe("CohesionAnalyzer", () => {
 
     console.log(cohesionScores);
 
-    // Add your expectations here, e.g., expect specific scores or other results
-    // For example:
+    // Add expectations here, e.g., expect specific scores or other results
     expect(cohesionScores.size).toBeGreaterThan(0);
   });
 });

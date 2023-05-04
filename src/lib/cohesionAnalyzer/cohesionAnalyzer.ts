@@ -1,5 +1,4 @@
 import Graph from "graphology";
-import { FileNode } from "../types";
 
 interface Weights {
   lineCount: number;
@@ -8,24 +7,29 @@ interface Weights {
 }
 
 const DEFAULT_WEIGHTS: Weights = {
-  lineCount: 0.5,
-  componentUtilityCount: 0.5,
-  dependencyCount: 0.25,
+  lineCount: 0.1,
+  componentUtilityCount: 1,
+  dependencyCount: 0.5,
 };
 
 export class CohesionAnalyzer {
   private readonly moduleGraph: Graph;
+  private cohesionScores: Map<string, number[]>;
 
   constructor(moduleGraph: Graph) {
     this.moduleGraph = moduleGraph;
+
+    // Map of FileNode path to cohesion score tuple
+    // Tuple is [raw, normalized_by_median]
+    // Raw scores are more useful for comparing across repositories
+    // Normalized scores are more useful for comparing within a repository
+    this.cohesionScores = new Map<string, number[]>();
   }
 
-  analyze(): Map<string, number> {
+  analyze(): Map<string, number[]> {
     const fileNodes = this.moduleGraph.filterNodes(
       (_node, attr) => attr.type === "file"
     );
-
-    const cohesionScores = new Map<string, number>();
 
     // Calculate median or average values
     const lineCounts = fileNodes.map((fileNode) =>
@@ -67,33 +71,50 @@ export class CohesionAnalyzer {
         "dependencies"
       ).length;
 
-      // Normalize values
-      const normalizedFileSize = this.normalize(lineCount, medianLineCount);
-      const normalizedComponentUtilityCount = this.normalize(
+      const cohesionMatrix = [
+        lineCount,
         componentUtilityCount,
-        medianComponentUtilityCount
-      );
-      const normalizedDependencyCount = this.normalize(
         dependencyCount,
-        medianDependencyCount
-      );
-
-      // TODO -- add weights to each of these values
-      const unweightedCohesionMatrix = [
-        normalizedFileSize,
-        normalizedComponentUtilityCount,
-        normalizedDependencyCount,
       ];
 
-      const weightedCohesionMatrix = this.weightCohesionMatrix(
-        unweightedCohesionMatrix
+      const normalizedCohesionMatrix = [
+        this.normalize(lineCount, medianLineCount),
+        this.normalize(componentUtilityCount, medianComponentUtilityCount),
+        this.normalize(dependencyCount, medianDependencyCount),
+      ];
+
+      const rawScore = this.calcCohesionScore(
+        this.weightCohesionMatrix(cohesionMatrix)
       );
 
-      const cohesionScore = this.calcCohesionScore(weightedCohesionMatrix);
-      cohesionScores.set(fileNode, cohesionScore);
+      const normalizedScore = this.calcCohesionScore(
+        this.weightCohesionMatrix(normalizedCohesionMatrix)
+      );
+
+      this.cohesionScores.set(fileNode, [rawScore, normalizedScore]);
     }
 
-    return cohesionScores;
+    return this.getCohesionScores();
+  }
+
+  getCohesionScores(): Map<string, number[]> {
+    return this.cohesionScores;
+  }
+
+  getNormalizedCohesionScores(): Map<string, number> {
+    const normalizedScores = new Map<string, number>();
+    for (const [fileNode, scores] of this.cohesionScores) {
+      normalizedScores.set(fileNode, scores[1]);
+    }
+    return normalizedScores;
+  }
+
+  getRawCohesionScores(): Map<string, number> {
+    const rawScores = new Map<string, number>();
+    for (const [fileNode, scores] of this.cohesionScores) {
+      rawScores.set(fileNode, scores[0]);
+    }
+    return rawScores;
   }
 
   // Normalizing should get all of our values close to 1
