@@ -173,6 +173,7 @@ export class CohesionAnalyzer {
   }
 
   getMostCohesive(scores: Map<string, number>): Map<string, number> {
+    console.log(...Array.from(scores.values()));
     const maxScore = Math.max(
       ...Array.from(scores.values()).filter(
         (x) => x !== Infinity || x !== null || !isNaN(x)
