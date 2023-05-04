@@ -16,7 +16,7 @@ Flags:
 
 - `-t` or `--tsconfig` - path to tsconfig.json
 - `-r` or `--repo` - path to repository
-- `-o` or `--output` - path to output JSON file
+- `-o` or `--output` - path to output directory
 - `-f` or `--filePatterns` - file patterns to include in scan (default: `['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx']`)
 - `-i` or `--ignorePatterns` - file patterns to ignore in scan (default: `['**/node_modules/**', '**/dist/**']`)
 - `-p` or `--internalPackages` - pacakges considered internal e.g. `@myorg/package` (default: `[]`)
@@ -30,7 +30,7 @@ Outputs:
 
 Example:
 
-`p cli scan -t path_to_tsconfig -r path_to_repo -o path_to_output/name_of_output_file.json`
+`p cli scan -t path_to_tsconfig -r path_to_repo -o path_to_output_dir`
 
 ## Roadmap
 
@@ -68,7 +68,7 @@ Overall:
 `CLI`:
 
 - [x] MVP
-- [ ] Add CohesionAnalyzer to CLI
+- [x] Add CohesionAnalyzer to CLI
 
 ## Bugs/Gotchas
 

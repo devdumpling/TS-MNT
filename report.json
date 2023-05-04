@@ -1,0 +1,35 @@
+{
+  "order": 19,
+  "edges": 13,
+  "averageRawScore": 0.9893639034007886,
+  "averageNormalizedScore": 6.855400260176772,
+  "medianRawScore": 0.4166666666666667,
+  "medianNormalizedScore": 0.7407407407407407,
+  "mostCohesive": {
+    "dataType": "Map",
+    "value": [
+      [
+        "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
+        49.99999999999999
+      ]
+    ]
+  },
+  "leastCohesive": {
+    "dataType": "Map",
+    "value": [
+      [
+        "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+        0.2145922746781116
+      ]
+    ]
+  },
+  "below25thPercentile": {
+    "dataType": "Map",
+    "value": [
+      [
+        "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+        0.2145922746781116
+      ]
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "dataType": "Map",
+  "value": [
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleArrowComponent.tsx",
+      0.47619047619047616
+    ],
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClass.ts",
+      0.6666666666666666
+    ],
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleClassComponent.tsx",
+      0.2222222222222222
+    ],
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleFunctionComponent/SampleFunctionComponent.tsx",
+      0.2
+    ],
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleHOC.tsx",
+      0.4166666666666667
+    ],
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/index.ts",
+      5
+    ],
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleMultiComponent.tsx",
+      0.1639344262295082
+    ],
+    [
+      "/Users/devonwells/dev/TS-MNT/__mocks__/TestRepo/src/SampleUtil.ts",
+      0.7692307692307692
+    ]
+  ]
+}

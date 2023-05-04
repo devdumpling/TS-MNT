@@ -2,7 +2,8 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { RepositoryScanner } from "./lib";
+import { RepositoryScanner, CohesionAnalyzer } from "./lib";
+import { mapReplacer } from "./lib/helpers";
 import path from "path";
 import fs from "fs";
 import type { ScannerOptions } from "./lib/types";
@@ -28,7 +29,7 @@ yargs(hideBin(process.argv))
         .option("output", {
           alias: "o",
           type: "string",
-          description: "Path to the output file",
+          description: "Path to the output directory",
           demandOption: false,
         })
         .option("filePatterns", {
@@ -73,7 +74,7 @@ yargs(hideBin(process.argv))
       // TODO -- sanitize and validate these inputs
       const tsConfigFile = path.resolve(argv.tsconfig);
       const rootDir = path.resolve(argv.root);
-      const outputFile = argv?.output;
+      const outputDir = argv?.output;
 
       const options: ScannerOptions = {
         filePatterns: argv.filePatterns as string[] | undefined,
@@ -98,21 +99,70 @@ yargs(hideBin(process.argv))
         process.exit(1);
       }
 
+      // Scan
       const repositoryScanner = new RepositoryScanner(tsConfigFile, options);
       const components = await repositoryScanner.scanRepository(rootDir);
 
-      if (outputFile) {
+      // Analyze
+      const cohesionAnalyzer = new CohesionAnalyzer(components);
+      const cohesionScores = cohesionAnalyzer.analyze();
+      const rawScores = cohesionAnalyzer.getRawCohesionScores();
+      const normalizedScores = cohesionAnalyzer.getNormalizedCohesionScores();
+      const averageRawScore = cohesionAnalyzer.getAverageScore(rawScores);
+      const averageNormalizedScore =
+        cohesionAnalyzer.getAverageScore(normalizedScores);
+      const medianRawScore = cohesionAnalyzer.getMedianScore(rawScores);
+      const medianNormalizedScore =
+        cohesionAnalyzer.getMedianScore(normalizedScores);
+      const mostCohesive = cohesionAnalyzer.getMostCohesive(normalizedScores);
+      const leastCohesive = cohesionAnalyzer.getLeastCohesive(normalizedScores);
+      const below25thPercentile = cohesionAnalyzer.getScoresBelowPercentile(
+        normalizedScores,
+        0.25
+      );
+
+      if (outputDir) {
         fs.writeFileSync(
-          outputFile,
+          `${outputDir}/scan.json`,
           JSON.stringify(
             components,
             (_key, value) => (value instanceof Set ? [...value] : value),
             2
           )
         );
-        console.log(`Components written to ${outputFile}`);
+        console.log(`Components written to ${outputDir}/scan.json`);
         console.info("Order", components.order);
         console.info("Edges:", components.size);
+        fs.writeFileSync(
+          `${outputDir}/raw-scores.json`,
+          JSON.stringify(rawScores, mapReplacer, 2)
+        );
+        console.log(`Raw scores written to ${outputDir}/raw-scores.json`);
+        fs.writeFileSync(
+          `${outputDir}/normalized-scores.json`,
+          JSON.stringify(normalizedScores, mapReplacer, 2)
+        );
+        console.log(
+          `Normalized scores written to ${outputDir}/normalized-scores.json`
+        );
+        fs.writeFileSync(
+          `${outputDir}/report.json`,
+          JSON.stringify(
+            {
+              order: components.order,
+              edges: components.size,
+              averageRawScore,
+              averageNormalizedScore,
+              medianRawScore,
+              medianNormalizedScore,
+              mostCohesive,
+              leastCohesive,
+              below25thPercentile,
+            },
+            mapReplacer,
+            2
+          )
+        );
       } else {
         console.log("Found components:");
         console.log(
@@ -121,6 +171,20 @@ yargs(hideBin(process.argv))
             (_key, value) => (value instanceof Set ? [...value] : value),
             2
           )
+        );
+        console.info("Order", components.order);
+        console.info("Edges:", components.size);
+        console.info("Raw Scores:", rawScores);
+        console.info("Normalized Scores:", normalizedScores);
+        console.info("Average Score (raw):", averageRawScore);
+        console.info("Average Score (normalized):", averageNormalizedScore);
+        console.info("Median Score (raw):", medianRawScore);
+        console.info("Median Score (normalized):", medianNormalizedScore);
+        console.info("Most Cohesive (normalized):", mostCohesive);
+        console.info("Least Cohesive (normalized):", leastCohesive);
+        console.info(
+          "Below 25th Percentile (normalized):",
+          below25thPercentile
         );
       }
     }

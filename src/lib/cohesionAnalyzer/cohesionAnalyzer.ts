@@ -122,6 +122,11 @@ export class CohesionAnalyzer {
     return Array.from(scores.values()).reduce((a, b) => a + b, 0) / scores.size;
   }
 
+  getMedianScore(scores: Map<string, number>): number {
+    const sortedScores = Array.from(scores.values()).sort((a, b) => a - b);
+    return sortedScores[Math.ceil(sortedScores.length / 2) - 1];
+  }
+
   // Grabs scores below a given percentile, e.g. look at the bottom 25% (0.25) of scores
   getScoresBelowPercentile(scores: Map<string, number>, percentile: number) {
     if (percentile < 0 || percentile > 1) {
