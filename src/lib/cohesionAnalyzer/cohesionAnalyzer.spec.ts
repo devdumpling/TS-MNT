@@ -64,4 +64,38 @@ describe("CohesionAnalyzer", () => {
       expect(score).toBeLessThan(cutoff);
     }
   });
+
+  test("should return the least cohesive files", async () => {
+    const moduleGraph = await repositoryScanner.scanRepository(rootDir);
+    const cohesionAnalyzer = new CohesionAnalyzer(moduleGraph);
+    const cohesionScores = cohesionAnalyzer.analyze();
+    const rawScores = cohesionAnalyzer.getRawCohesionScores();
+
+    const leastCohesive = cohesionAnalyzer.getLeastCohesive(rawScores);
+
+    console.log("Least cohesive files:", leastCohesive);
+
+    const minValue = Math.min(...rawScores.values());
+
+    for (const score of leastCohesive.values()) {
+      expect(score).toBe(minValue);
+    }
+  });
+
+  test("should return the most cohesive files", async () => {
+    const moduleGraph = await repositoryScanner.scanRepository(rootDir);
+    const cohesionAnalyzer = new CohesionAnalyzer(moduleGraph);
+    const cohesionScores = cohesionAnalyzer.analyze();
+    const rawScores = cohesionAnalyzer.getRawCohesionScores();
+
+    const mostCohesive = cohesionAnalyzer.getMostCohesive(rawScores);
+
+    console.log("Most cohesive files:", mostCohesive);
+
+    const maxValue = Math.max(...rawScores.values());
+
+    for (const score of mostCohesive.values()) {
+      expect(score).toBe(maxValue);
+    }
+  });
 });

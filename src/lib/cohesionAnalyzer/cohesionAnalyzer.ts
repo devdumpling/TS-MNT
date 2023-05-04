@@ -144,6 +144,28 @@ export class CohesionAnalyzer {
     return belowCutoff;
   }
 
+  getLeastCohesive(scores: Map<string, number>): Map<string, number> {
+    const minScore = Math.min(...Array.from(scores.values()));
+    const minScores = new Map<string, number>();
+    for (const [fileNode, score] of scores) {
+      if (score === minScore) {
+        minScores.set(fileNode, score);
+      }
+    }
+    return minScores;
+  }
+
+  getMostCohesive(scores: Map<string, number>): Map<string, number> {
+    const maxScore = Math.max(...Array.from(scores.values()));
+    const maxScores = new Map<string, number>();
+    for (const [fileNode, score] of scores) {
+      if (score === maxScore) {
+        maxScores.set(fileNode, score);
+      }
+    }
+    return maxScores;
+  }
+
   // Normalizing should get all of our values close to 1
   // A value > 1 means the value is larger than the median
   // A value < 1 means the value is smaller than the median
