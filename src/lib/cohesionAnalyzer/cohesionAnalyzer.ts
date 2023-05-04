@@ -121,7 +121,7 @@ export class CohesionAnalyzer {
   getAverageScore(scores: Map<string, number>): number {
     return (
       Array.from(scores.values()).reduce((acc, curr) => {
-        if (!curr || isNaN(curr) || curr === Infinity) {
+        if (!curr || isNaN(curr) || !isFinite(curr)) {
           return acc;
         } else {
           return acc + curr;
@@ -176,9 +176,7 @@ export class CohesionAnalyzer {
     const validScores = Array.from(scores.values()).filter(
       (x) => (x !== null || !isNaN(x)) && isFinite(x)
     );
-    console.log(validScores);
     const maxScore = Math.max(...validScores);
-    console.log(maxScore);
     const maxScores = new Map<string, number>();
     for (const [fileNode, score] of scores) {
       if (score === maxScore) {
