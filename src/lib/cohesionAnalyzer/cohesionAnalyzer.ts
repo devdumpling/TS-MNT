@@ -121,7 +121,7 @@ export class CohesionAnalyzer {
   getAverageScore(scores: Map<string, number>): number {
     return (
       Array.from(scores.values()).reduce((a, b) => {
-        if (isNaN(a) || isNaN(b)) {
+        if (!a || isNaN(a) || !b || isNaN(b)) {
           return 0;
         } else {
           return a + b;
@@ -158,7 +158,9 @@ export class CohesionAnalyzer {
   }
 
   getLeastCohesive(scores: Map<string, number>): Map<string, number> {
-    const minScore = Math.min(...Array.from(scores.values()));
+    const minScore = Math.min(
+      ...Array.from(scores.values()).filter((x) => !!x || !isNaN(x))
+    );
     const minScores = new Map<string, number>();
     for (const [fileNode, score] of scores) {
       if (score === minScore) {
@@ -169,7 +171,9 @@ export class CohesionAnalyzer {
   }
 
   getMostCohesive(scores: Map<string, number>): Map<string, number> {
-    const maxScore = Math.max(...Array.from(scores.values()));
+    const maxScore = Math.max(
+      ...Array.from(scores.values()).filter((x) => !!x || !isNaN(x))
+    );
     const maxScores = new Map<string, number>();
     for (const [fileNode, score] of scores) {
       if (score === maxScore) {
