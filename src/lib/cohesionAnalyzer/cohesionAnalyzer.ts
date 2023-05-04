@@ -174,6 +174,7 @@ export class CohesionAnalyzer {
     const maxScore = Math.max(
       ...Array.from(scores.values()).filter((x) => x !== null || !isNaN(x))
     );
+    console.log(maxScore);
     const maxScores = new Map<string, number>();
     for (const [fileNode, score] of scores) {
       if (score === maxScore) {
