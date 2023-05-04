@@ -34,6 +34,12 @@ Example:
 
 ## Roadmap
 
+Overall:
+
+- [ ] Polish tests
+- [ ] Update documentation explanation and provide high level overview video
+- [ ] Publish to npm
+
 `RepositoryScanner`:
 
 - [x] MVP
@@ -58,6 +64,11 @@ Example:
 `ModularityReporter`:
 
 - [ ] MVP
+
+`CLI`:
+
+- [x] MVP
+- [ ] Add CohesionAnalyzer to CLI
 
 ## Bugs/Gotchas
 
