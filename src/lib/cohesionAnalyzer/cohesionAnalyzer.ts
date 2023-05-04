@@ -160,7 +160,7 @@ export class CohesionAnalyzer {
   getLeastCohesive(scores: Map<string, number>): Map<string, number> {
     const minScore = Math.min(
       ...Array.from(scores.values()).filter(
-        (x) => x !== Infinity || x !== null || !isNaN(x)
+        (x) => (x !== null || !isNaN(x)) && isFinite(x)
       )
     );
     const minScores = new Map<string, number>();
