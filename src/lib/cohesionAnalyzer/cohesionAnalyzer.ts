@@ -117,6 +117,33 @@ export class CohesionAnalyzer {
     return rawScores;
   }
 
+  // Average across a provided score map
+  getAverageScore(scores: Map<string, number>): number {
+    return Array.from(scores.values()).reduce((a, b) => a + b, 0) / scores.size;
+  }
+
+  // Grabs scores below a given percentile, e.g. look at the bottom 25% (0.25) of scores
+  getScoresBelowPercentile(scores: Map<string, number>, percentile: number) {
+    if (percentile < 0 || percentile > 1) {
+      throw new Error("Percentile must be between 0 and 1");
+    }
+
+    if (percentile === 0 || scores.size === 0) {
+      return new Map<string, number>();
+    }
+
+    const sortedScores = Array.from(scores.values()).sort((a, b) => a - b);
+    const cutoff =
+      sortedScores[Math.ceil(sortedScores.length * percentile) - 1];
+    const belowCutoff = new Map<string, number>();
+    for (const [fileNode, score] of scores) {
+      if (score < cutoff) {
+        belowCutoff.set(fileNode, score);
+      }
+    }
+    return belowCutoff;
+  }
+
   // Normalizing should get all of our values close to 1
   // A value > 1 means the value is larger than the median
   // A value < 1 means the value is smaller than the median
