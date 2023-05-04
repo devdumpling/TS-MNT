@@ -224,4 +224,26 @@ export class CohesionAnalyzer {
       return sortedNumbers[middleIndex];
     }
   }
+
+  detectOutliers(scores: Map<string, number>): Map<string, number> {
+    const q1Scores = this.getScoresBelowPercentile(scores, 0.25);
+    const q3Scores = this.getScoresBelowPercentile(scores, 0.75);
+
+    const q1 =
+      q1Scores.size > 0 ? Math.max(...Array.from(q1Scores.values())) : 0;
+    const q3 =
+      q3Scores.size > 0 ? Math.max(...Array.from(q3Scores.values())) : 0;
+
+    const iqr = q3 - q1;
+    const lowerBound = q1 - 1.5 * iqr;
+    const upperBound = q3 + 1.5 * iqr;
+
+    const outliers = new Map<string, number>();
+    for (const [fileNode, score] of scores) {
+      if (score < lowerBound || score > upperBound) {
+        outliers.set(fileNode, score);
+      }
+    }
+    return outliers;
+  }
 }

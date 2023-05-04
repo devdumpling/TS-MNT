@@ -120,12 +120,13 @@ yargs(hideBin(process.argv))
         normalizedScores,
         0.25
       );
+      const outliers = cohesionAnalyzer.detectOutliers(normalizedScores);
 
       if (outputDir) {
         if (!fs.existsSync(outputDir)) {
           fs.mkdirSync(outputDir);
         }
-        
+
         fs.writeFileSync(
           `${outputDir}/scan.json`,
           JSON.stringify(
@@ -162,6 +163,7 @@ yargs(hideBin(process.argv))
               mostCohesive,
               leastCohesive,
               below25thPercentile,
+              outliers,
             },
             mapReplacer,
             2
