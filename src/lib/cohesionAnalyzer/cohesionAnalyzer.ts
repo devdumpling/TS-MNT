@@ -225,6 +225,17 @@ export class CohesionAnalyzer {
     }
   }
 
+  pruneOutliers(scores: Map<string, number>): Map<string, number> {
+    const prunedScores = new Map<string, number>();
+    const outliers = this.detectOutliers(scores);
+    for (const [fileNode, score] of scores) {
+      if (!outliers.has(fileNode)) {
+        prunedScores.set(fileNode, score);
+      }
+    }
+    return prunedScores;
+  }
+
   detectOutliers(scores: Map<string, number>): Map<string, number> {
     const q1Scores = this.getScoresBelowPercentile(scores, 0.25);
     const q3Scores = this.getScoresBelowPercentile(scores, 0.75);

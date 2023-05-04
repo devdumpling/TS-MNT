@@ -108,19 +108,38 @@ yargs(hideBin(process.argv))
       const cohesionScores = cohesionAnalyzer.analyze();
       const rawScores = cohesionAnalyzer.getRawCohesionScores();
       const normalizedScores = cohesionAnalyzer.getNormalizedCohesionScores();
+
+      const prunedOutliers = cohesionAnalyzer.detectOutliers(normalizedScores);
+
+      // Prune normalized outliers
+      const prunedNormalizedScores =
+        cohesionAnalyzer.pruneOutliers(normalizedScores);
+
+      // Report
       const averageRawScore = cohesionAnalyzer.getAverageScore(rawScores);
       const averageNormalizedScore =
         cohesionAnalyzer.getAverageScore(normalizedScores);
+      const averagePrunedNormalizedScore = cohesionAnalyzer.getAverageScore(
+        prunedNormalizedScores
+      );
+
       const medianRawScore = cohesionAnalyzer.getMedianScore(rawScores);
       const medianNormalizedScore =
         cohesionAnalyzer.getMedianScore(normalizedScores);
-      const mostCohesive = cohesionAnalyzer.getMostCohesive(normalizedScores);
-      const leastCohesive = cohesionAnalyzer.getLeastCohesive(normalizedScores);
+      const medianPrunedNormalizedScore = cohesionAnalyzer.getMedianScore(
+        prunedNormalizedScores
+      );
+
+      const mostCohesive = cohesionAnalyzer.getMostCohesive(
+        prunedNormalizedScores
+      );
+      const leastCohesive = cohesionAnalyzer.getLeastCohesive(
+        prunedNormalizedScores
+      );
       const below25thPercentile = cohesionAnalyzer.getScoresBelowPercentile(
-        normalizedScores,
+        prunedNormalizedScores,
         0.25
       );
-      const outliers = cohesionAnalyzer.detectOutliers(normalizedScores);
 
       if (outputDir) {
         if (!fs.existsSync(outputDir)) {
@@ -151,6 +170,20 @@ yargs(hideBin(process.argv))
           `Normalized scores written to ${outputDir}/normalized-scores.json`
         );
         fs.writeFileSync(
+          `${outputDir}/pruned-outliers.json`,
+          JSON.stringify(prunedOutliers, mapReplacer, 2)
+        );
+        console.log(
+          `Pruned outliers written to ${outputDir}/pruned-outliers.json`
+        );
+        fs.writeFileSync(
+          `${outputDir}/pruned-normalized-scores.json`,
+          JSON.stringify(prunedNormalizedScores, mapReplacer, 2)
+        );
+        console.log(
+          `Pruned normalized scores written to ${outputDir}/pruned-normalized-scores.json`
+        );
+        fs.writeFileSync(
           `${outputDir}/report.json`,
           JSON.stringify(
             {
@@ -158,12 +191,14 @@ yargs(hideBin(process.argv))
               edges: components.size,
               averageRawScore,
               averageNormalizedScore,
+              averagePrunedNormalizedScore,
               medianRawScore,
               medianNormalizedScore,
+              medianPrunedNormalizedScore,
               mostCohesive,
               leastCohesive,
               below25thPercentile,
-              outliers,
+              prunedNormalizedScores,
             },
             mapReplacer,
             2
@@ -182,6 +217,7 @@ yargs(hideBin(process.argv))
         console.info("Edges:", components.size);
         console.info("Raw Scores:", rawScores);
         console.info("Normalized Scores:", normalizedScores);
+        console.info("Pruned Normalized Scores:", prunedNormalizedScores);
         console.info("Average Score (raw):", averageRawScore);
         console.info("Average Score (normalized):", averageNormalizedScore);
         console.info("Median Score (raw):", medianRawScore);
