@@ -122,6 +122,10 @@ yargs(hideBin(process.argv))
       );
 
       if (outputDir) {
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir);
+        }
+        
         fs.writeFileSync(
           `${outputDir}/scan.json`,
           JSON.stringify(
