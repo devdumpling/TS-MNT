@@ -236,6 +236,7 @@ export class CohesionAnalyzer {
     return prunedScores;
   }
 
+  // outlier detection method using the interquartile range (IQR)
   detectOutliers(scores: Map<string, number>): Map<string, number> {
     const q1Scores = this.getScoresBelowPercentile(scores, 0.25);
     const q3Scores = this.getScoresBelowPercentile(scores, 0.75);
